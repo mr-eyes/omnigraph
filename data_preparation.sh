@@ -17,7 +17,7 @@ wget -c ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_32/genco
 
 # Step 2
 echo "Generating names file"
-zcat gencode.v32.transcripts.fa.gz | grep ">" | cut -c 2- | awk 'BEGIN{FS=OFS="\t";}{print $1,$1}' | sort | uniq > gencode.v32.transcripts.fa.names
+zcat gencode.v32.transcripts.fa.gz | grep ">" | cut -c 2- | awk 'BEGIN{FS=OFS="\t";}{print $1,$1}' > gencode.v32.transcripts.fa.names
 
 
 # Step 3
