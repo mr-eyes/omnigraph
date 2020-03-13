@@ -1,1 +1,3 @@
 # Omnigraph
+
+## [Workflow](./workflow.md)
