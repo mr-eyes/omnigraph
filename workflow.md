@@ -60,3 +60,9 @@ python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.g
 
 > time: ~17 mins
 > Size on disk: 885.6 MiB due to the multiple indeces.
+
+#### 2.5 Generate names file for kProcessor <unitig_header:collectiveCompID>
+
+```bash
+python unitigs_to_collective_kpNames.py data/cDBG_SRR11015356_k31.unitigs.fa collectiveComps_cDBG_SRR11015356_k31.unitigs.gfa.components.tsv
+```
