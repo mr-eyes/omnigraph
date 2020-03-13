@@ -80,7 +80,7 @@ print("Dumping to ")
 
 component_id = 1
 
-output_file = os.path.basename(gfa_path) + ".components.tsv"
+output_file = os.path.basename(gfa_path) + ".components.csv"
 
 with open(output_file  ,'w') as comp:
 
