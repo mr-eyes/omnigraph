@@ -59,3 +59,4 @@ python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.g
 ```
 
 > time: ~17 mins
+> Size on disk: 885.6 MiB due to the multiple indeces.
