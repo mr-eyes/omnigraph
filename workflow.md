@@ -104,6 +104,7 @@ Stats
 ```txt
 Indexing time : 0:07:49.865936
 Number of kmers: 116265910
+Index size: 1.4 GB
 ```
 
 ##### Trial 2 (-47,567,281 Kmers)
@@ -127,6 +128,7 @@ Stats
 Indexing time : 0:05:54.605237
 Memory: 3.7 GB
 Number of kmers: 125103375
+Index size: 1.4 GB
 ```
 
 ##### Trial 3 (-23,783,608 Kmers)
@@ -150,6 +152,7 @@ Stats
 Indexing time : 0:05:02.889045
 Memory: 5GB
 Number of kmers: 148887048
+Index size: 2.8 GB
 ```
 
 ##### Trial 4 (-11,891,562 Kmers)
@@ -173,6 +176,7 @@ Stats
 Indexing time : 0:04:06.227647
 Memory: 7.5 GB
 Number of kmers: 160779094
+Index size: 5.4 GB
 ```
 
 ##### Trial 5 (-5,946,610 Kmers) **The maximum I can afford**
@@ -196,7 +200,7 @@ Stats
 Indexing time : 0:04:03.444587
 Memory: 12.5 GB
 Number of kmers: 166724046
-
+Index size: 10.5 GB
 ```
 
 ### **PHMAP Surprise**
@@ -224,5 +228,5 @@ Stats
 Indexing time : 0:02:49.239873
 Memory: 9 GB
 Number of kmers: 172670656
-
+Index size: 2.8 GB
 ```
