@@ -61,8 +61,140 @@ python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.g
 > time: ~17 mins
 > Size on disk: 885.6 MiB due to the multiple indeces.
 
-#### 2.5 Generate names file for kProcessor <unitig_header:collectiveCompID>
+---
+
+### 3 kProcessor Indexing
+
+#### 3.1 Generate names file for kProcessor <unitig_header:collectiveCompID>
 
 ```bash
 python unitigs_to_collective_kpNames.py data/cDBG_SRR11015356_k31.unitigs.fa collectiveComps_cDBG_SRR11015356_k31.unitigs.gfa.components.tsv
+```
+
+#### 3.2 Calculate the number of unique canonical kmers in the unitigs
+
+```bash
+UNITIGS=data/cDBG_SRR11015356_k31.unitigs.fa
+jellyfish count -m 31 -s 250M -t 10 -C ${UNITIGS}
+jellyfish dump mer_counts.jf > ${UNITIGS}.kmers.fa
+cat ${UNITIGS}.kmers.fa | grep ">" | wc -l
+```
+
+> Number of kmers **172,670,656**
+
+#### 3.3 **(MQF)** Indexing the 50K Collective component
+
+##### Trial 1 (-56,404,746 Kmers)
+
+```ini
+[kProcessor]
+ksize = 31
+Q = 27
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:07:49.865936
+Number of kmers: 116265910
+```
+
+##### Trial 2 (-47,567,281 Kmers)
+
+```ini
+[kProcessor]
+ksize = 31
+Q = 28
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:05:54.605237
+Memory: 3.7 GB
+Number of kmers: 125103375
+```
+
+##### Trial 3 (-23,783,608 Kmers)
+
+```ini
+[kProcessor]
+ksize = 31
+Q = 29
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:05:02.889045
+Memory: 5GB
+Number of kmers: 148887048
+```
+
+##### Trial 4 (-11,891,562 Kmers)
+
+```ini
+[kProcessor]
+ksize = 31
+Q = 30
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:04:06.227647
+Memory: 7.5 GB
+Number of kmers: 160779094
+```
+
+##### Trial 5 (-5,946,610 Kmers) **The maximum I can afford**
+
+```ini
+[kProcessor]
+ksize = 31
+Q = 31
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:04:03.444587
+Memory: 12.5 GB
+Number of kmers: 166724046
+
 ```
