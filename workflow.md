@@ -198,3 +198,31 @@ Memory: 12.5 GB
 Number of kmers: 166724046
 
 ```
+
+### **PHMAP Surprise**
+
+Inline-style:
+<img src="https://www.pngfind.com/pngs/m/9-94551_graphic-ballon-vector-surprise-box-sorpresa-comic-png.png" alt="drawing" width="200"/>
+
+#### Trial 1 (No Lost Kmers!!!)
+
+```ini
+[kProcessor]
+ksize = 31
+hashing_mode = 1
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:02:49.239873
+Memory: 9 GB
+Number of kmers: 172670656
+
+```
