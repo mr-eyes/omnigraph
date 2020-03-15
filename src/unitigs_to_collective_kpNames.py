@@ -54,4 +54,5 @@ with open(unitigs_fasta, 'r') as fastaReader, open(names_file, 'w') as namesWrit
         if line[0] == '>':
             unitigID = line[1:].split()[0]
             collectiveCompID = unitigToCollective[unitigID]
-            namesWriter.write(f"{line[1:]}\t{collectiveCompID}\n")
+            readName = line.replace('\n','')[1:]
+            namesWriter.write(f"{readName}\t{collectiveCompID}\n")
