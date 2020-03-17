@@ -225,8 +225,32 @@ python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
 Stats
 
 ```txt
-Indexing time : 0:02:49.239873
+Indexing time : 0:02:49.715953
 Memory: 9 GB
 Number of kmers: 172670656
-Index size: 2.8 GB
+Index size: 4.3 GB
+Index loading time is : 2 secs!
+```
+
+#### Trial 2 (Murmur Hashing)
+
+```ini
+[kProcessor]
+ksize = 31
+hashing_mode = 0
+kmers_mode = 1
+chunk_size = 100000
+```
+
+```bash
+python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+```
+
+Stats
+
+```txt
+Indexing time : 0:02:35.805547
+Memory: 4.3 GB
+Number of kmers: 29,720,973
+Index size: 1.1 GB
 ```
