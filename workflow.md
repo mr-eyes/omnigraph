@@ -44,12 +44,17 @@ cDBG_SRR11015356_k31.unitigs.fa  FASTA   DNA   9,145,177  447,026,231       31  
 
 ```bash
 python src/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.gfa
+
+<<STATS
+Number of original connected components : 1,032,950
+>>
+
 ```
 
 #### 2.3 Add the collective components column (50k) collective component
 
 ```bash
-python src/originalComponentsToCollectiveComponents.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv 50000
+python src/originalComponentsToCollectiveComponents.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv 180
 ```
 
 #### 2.4 Insert the original & collective components into the mySQL unitigs_tracking table
