@@ -46,8 +46,19 @@ cDBG_SRR11015356_k31.unitigs.fa  FASTA   DNA   9,145,177  447,026,231       31  
 python src/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.gfa
 
 <<STATS
+
+(Mystats)
 Number of original connected components : 1,032,950
->>
+
+(BandageStats)
+Node count:                       9,145,177
+Edge count:                       11,701,516
+Total length (bp):                447026231
+Connected components:             1,032,950 SAME AS MINE
+Largest component (bp):           343561868
+Shortest node (bp):               31
+
+STATS
 
 ```
 
