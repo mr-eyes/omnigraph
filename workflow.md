@@ -259,3 +259,11 @@ Memory: 4.3 GB
 Number of kmers: 29,720,973
 Index size: 1.1 GB
 ```
+
+---
+---
+
+### Query 1
+
+> Querying 10K sequences first and last kmers took about 0.5 Sec.
+
