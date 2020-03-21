@@ -42,15 +42,15 @@ int main(int argc, char **argv)
 			uint64_t color1 = kf->getCount(seq.second.front().hash);
 			uint64_t color2 = kf->getCount(seq.second.back().hash);
 
-			if (color1 == color2)
-			{
+            if(color1 != 0 && color2 !=0){
 
-				if (color1 != 0)
-				{
-					// Just to make sure they are really found
-					cout << seq.first << '\t' << 1 << '\t' << "0:-1" << endl;
-				}
-				else
+                    if(color1 == color2){
+                        cout << seq.first << '\t' << 1 << '\t' << "0:-1" << endl;
+                    }else{
+                        cout << seq.first << '\t' << 0 << '\t' << "0:0" << endl;
+                    }
+            }
+            else
 				{
                     // That mean both are zeros so both could not be found
 					int noKmers = seq.second.size();
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 					// Check found Vs. unfound
 					if ((found_count[0] / noKmers) < 0.5)
 					{
-					 			// not aligned read
+					 	// not aligned read
 						cout << seq.first << '\t' << 0 << '\t' << "0:0" << endl;
 					}
 					else
@@ -113,14 +113,8 @@ int main(int argc, char **argv)
 						}
 					}
 				}
-			}
-			else
-			{
-			 	// Now we know both are found but not aligned
-				cout << seq.first << '\t' << 0 << '\t' << "0:0" << endl;
-			}
-		}
-	}
+            }
+        }
 
 	return 0;
 }
