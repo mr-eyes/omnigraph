@@ -7,11 +7,11 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++17 -fPIC -lgomp -
 # kProcessor Setup
 # ----------------------------------------------------------------------------
 
-add_subdirectory(kProcessor)
-set(kProcessor_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/kProcessor/include")
+add_subdirectory(lib/kProcessor)
+set(kProcessor_INCLUDE_PATH "${PROJECT_SOURCE_DIR}/lib/kProcessor/include")
 
 # Add include directories.
-include_directories("${PROJECT_SOURCE_DIR}/kProcessor/ThirdParty/MQF/include")
+include_directories("${PROJECT_SOURCE_DIR}/lib/kProcessor/ThirdParty/MQF/include")
 include_directories (${kProcessor_INCLUDE_PATH})
 
 
