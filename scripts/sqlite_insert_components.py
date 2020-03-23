@@ -60,7 +60,6 @@ try:
             `finalcomponent_id`	INTEGER,
             `collectivecomponent_id`	INTEGER,
             `originalcomponent_id`	INTEGER,
-            `unitig_id`	INTEGER
         );
     """
 
