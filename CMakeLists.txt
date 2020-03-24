@@ -19,10 +19,12 @@ include_directories (${kProcessor_INCLUDE_PATH})
 # END kProcessor Setup
 # ----------------------------------------------------------------------------
 
+include_directories("${PROJECT_SOURCE_DIR}/includes")
 
-add_executable (query_1 main.cpp)
-# add_executable (try_idx try_fqfeeder.cpp)
+file(GLOB OMNIGRAPH_SRC "src/*.cpp")
 
-
+add_executable (query_1 first_query.cpp ${OMNIGRAPH_SRC})
 target_link_libraries (query_1 kProcessor pthread z)
 target_include_directories(query_1 INTERFACE ${kProcessor_INCLUDE_PATH} ${FQFeeder_INCLUDE_PATH})
+
+#add_executable (kmersToSeq kmers_to_seq.cpp)
