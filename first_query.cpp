@@ -7,12 +7,21 @@
 
 using namespace std;
 
+string kmers_to_seq(vector<string> & kmers){
+    string seq;
+    int kSize = kmers[0].size();
+    int i;
+    for(i = 0; i < kmers.size(); i+= kSize)
+        seq += kmers[i];
+
+    return seq.substr(0, (kmers.size() - 1)) + kmers.back();
+}
 
 int main(int argc, char **argv) {
 
-    string index_prefix = "/home/mabuelanin/Desktop/dev-plan/omnigraph/src/idx_cDBG_SRR11015356_k31unitigs/idx_idx_cDBG_SRR11015356_k31unitigs";
-    string PE_1_reads_file = "/home/mabuelanin/Desktop/dev-plan/omnigraph/src/data/SRR11015356_1.fasta";
-    string PE_2_reads_file = "/home/mabuelanin/Desktop/dev-plan/omnigraph/src/data/SRR11015356_2.fasta";
+    string index_prefix = "data/idx_cDBG_SRR11015356_k31unitigs/idx_idx_cDBG_SRR11015356_k31unitigs";
+    string PE_1_reads_file = "data/SRR11015356_1.fasta";
+    string PE_2_reads_file = "data/SRR11015356_2.fasta";
 
     int kSize = 31;
     int chunk_size = 1;
