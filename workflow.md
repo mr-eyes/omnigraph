@@ -43,7 +43,7 @@ cDBG_SRR11015356_k31.unitigs.fa  FASTA   DNA   9,145,177  447,026,231       31  
 #### 2.2 Get the connected components from the GFA
 
 ```bash
-python src/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.gfa
+python scripts/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.gfa
 
 <<STATS
 
@@ -65,7 +65,7 @@ STATS
 #### 2.3 Add the collective components column (50k) collective component
 
 ```bash
-python src/originalComponentsToCollectiveComponents.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv 180
+python scripts/originalComponentsToCollectiveComponents.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv 180
 ```
 
 #### 2.4 Insert the original & collective components into the mySQL unitigs_tracking table
@@ -84,7 +84,8 @@ python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.g
 #### 3.1 Generate names file for kProcessor <unitig_header:collectiveCompID>
 
 ```bash
-python unitigs_to_collective_kpNames.py data/cDBG_SRR11015356_k31.unitigs.fa collectiveComps_cDBG_SRR11015356_k31.unitigs.gfa.components.tsv
+python scripts/unitigs_to_collective_kpNames.py data/cDBG_SRR11015356_k31.unitigs.fa collectiveComps_cDBG_SRR11015356_k31.unitigs.gfa.components.csv
+mv cDBG_SRR11015356_k31.unitigs.fa.names data/
 ```
 
 #### 3.2 Calculate the number of unique canonical kmers in the unitigs
@@ -112,7 +113,7 @@ chunk_size = 100000
 ```
 
 ```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+python scritps/collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
 ```
 
 Stats
