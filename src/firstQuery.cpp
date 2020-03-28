@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <tuple>
 #include <omp.h>
+#include <chrono>
 
 using namespace std;
 
@@ -60,7 +61,8 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
         // That mean both are zeros so both could not be found
         // Case 3
         int noKmers = kmers.size();
-        vector<uint64_t> all_colors(noKmers);
+        // assert(noKmers <= 120);
+        vector<uint64_t> all_colors;
 
         phmap::flat_hash_set<uint64_t> unique_colors;
         phmap::flat_hash_map<bool, int> found_count;
@@ -74,14 +76,18 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
             unique_colors.insert(color);
         }
 
+        // assert(all_colors.size() <= 120);
+        // assert(found_count[0] + found_count[1] == 120);
+
         // Check found Vs. unfound
-        if ((found_count[0] / noKmers) < 0.5) {
+        if ((found_count[1] / noKmers) < 0.5) {
             // not aligned read
 
             scenario = 3;
             this->scenarios_count[PE][scenario]++;
             constructed_read = kmers_to_seq(kmers);
-            return make_tuple(constructed_read, false, scenario, (uint64_t) 0);
+            return make_tuple(constructed_read, false, scenario, 0);
+
         } else {
 
 /*
@@ -137,6 +143,7 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
                 vector<kmer_row> sliced_kmers = std::vector<kmer_row>(kmers.begin() + start_kmer,
                                                                       kmers.begin() + end_kmer + 1);
 
+                // assert(sliced_kmers.size() < );
                 constructed_read = kmers_to_seq(sliced_kmers);
                 return make_tuple(constructed_read, true, scenario, _matched_color);
 
@@ -154,6 +161,8 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
 void firstQuery::start_query() {
 
     int no_of_sequences = 67954363;
+
+
     int no_chunks = no_of_sequences / this->chunk_size;
 
     kmerDecoder *READ_1_KMERS = new Kmers(this->PE_1_reads_file, this->chunk_size, this->kSize);
@@ -163,10 +172,13 @@ void firstQuery::start_query() {
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
+        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
         READ_1_KMERS->next_chunk();
         READ_2_KMERS->next_chunk();
 
-        cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") ..." << endl;
+        // cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks << ") ..." << endl;
+        // cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks << ") ..." << endl;
 
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1 = READ_1_KMERS->getKmers()->begin();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2 = READ_2_KMERS->getKmers()->begin();
@@ -174,9 +186,11 @@ void firstQuery::start_query() {
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2_end = READ_2_KMERS->getKmers()->end();
 
         while (seq1 != seq1_end && seq2 != seq2_end) {
-            
+            // assert(seq1->second.size() == 120);
             tuple<string, bool, int, uint64_t> read_1_result = this->classifyQuery(seq1->second, 1);
             tuple<string, bool, int, uint64_t> read_2_result = this->classifyQuery(seq2->second, 2);
+
+             // out << "seq1: " << seq1->first << " | seq2: " << seq2->first << endl;
 
 //            string read_1_constructedRead = get<0>(read_1_result);
 //            bool read_1_mapped_flag = get<1>(read_1_result);
@@ -189,10 +203,26 @@ void firstQuery::start_query() {
 //            string read_2_constructedRead = get<0>(read_2_result);
 //            bool read_2_mapped_flag = get<1>(read_2_result);
 //            int read_2_scenario = get<2>(read_2_result);
+            
 
             seq1++;
             seq2++;
         }
+
+            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+            auto milli = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
+
+
+
+            long hr = milli / 3600000;
+            milli = milli - 3600000 * hr;
+            long min = milli / 60000;
+            milli = milli - 60000 * min;
+            long sec = milli / 1000;
+            milli = milli - 1000 * sec;
+            cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
+            cout << min << ":" << sec << ":" << milli << endl;
+
     }
 
 
