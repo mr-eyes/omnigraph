@@ -35,8 +35,8 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
     string constructed_read;
     int scenario = 0;
     int collectiveComponent;
-    uint64_t color1 = this->kf->getCount(kmers.front().hash);
-    uint64_t color2 = this->kf->getCount(kmers.back().hash);
+    uint64_t color1 = this->phmap_kmers[kmers.front().hash];
+    uint64_t color2 = this->phmap_kmers[kmers.back().hash];
 
 //    constructed_read = kmers_to_seq(kmers);
 //    cout << constructed_read << endl;
@@ -69,8 +69,22 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
 
 
         // Get all the colors
+        if(this->debug){
+            cout << "dumping (176)..." << endl;
+        }
         for (const auto &kmer: kmers) {
-            uint64_t color = kf->getCount(kmer.hash); // This line is a landmine, take care.
+            
+            phmap::flat_hash_map<uint64_t,uint64_t>::const_iterator got = this->phmap_kmers.find(kmer.hash);
+            uint64_t color;
+            if ( got == this->phmap_kmers.end() )
+                color = 0;
+            else
+                color = got->second;
+
+            // uint64_t color = kf->getCount(kmer.hash); // This line is a landmine, take care.
+            
+            // if(this->debug) cout << kmer.str << endl;
+            
             if(color != 0){
                 found_count++;
             }
@@ -168,6 +182,9 @@ void firstQuery::start_query() {
     kmerDecoder *READ_1_KMERS = new Kmers(this->PE_1_reads_file, this->chunk_size, this->kSize);
     kmerDecoder *READ_2_KMERS = new Kmers(this->PE_2_reads_file, this->chunk_size, this->kSize);
 
+//    READ_1_KMERS->setHashingMode(this->kf->KD->hash_mode);
+//    READ_2_KMERS->setHashingMode(this->kf->KD->hash_mode);
+
     int Reads_chunks_counter = 0;
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
@@ -187,6 +204,10 @@ void firstQuery::start_query() {
             // assert(seq1->second.size() == 120);
             tuple<string, bool, int, uint64_t> read_1_result = this->classifyQuery(seq1->second, 1);
             tuple<string, bool, int, uint64_t> read_2_result = this->classifyQuery(seq2->second, 2);
+
+            // if(Reads_chunks_counter == 176){
+            //    this->debug = true;
+            // }
 
              // out << "seq1: " << seq1->first << " | seq2: " << seq2->first << endl;
 
@@ -219,7 +240,7 @@ void firstQuery::start_query() {
             long sec = milli / 1000;
             milli = milli - 1000 * sec;
             cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
-            cout << min << ":" << sec << ":" << milli << endl;
+            cerr << min << ":" << sec << ":" << milli << endl;
 
     }
 

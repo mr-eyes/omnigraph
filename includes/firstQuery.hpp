@@ -6,6 +6,7 @@
 #include <algorithms.hpp>
 #include <iostream>
 #include <tuple>
+#include "parallel_hashmap/phmap_dump.h"
 
 using namespace std;
 
@@ -16,7 +17,8 @@ public:
     string PE_2_reads_file;
     string index_prefix;
     int kSize, chunk_size;
-
+    bool debug = 0;
+    phmap::flat_hash_map<uint64_t, uint64_t> phmap_kmers;
     kDataFrame *kf;
     colored_kDataFrame *ckf;
 
@@ -59,13 +61,21 @@ public:
         this->index_prefix = idx_prefix;
         this->PE_1_reads_file = pe1_fileName;
         this->PE_2_reads_file = pe2_fileName;
-        this->kSize = kSize;
+        this->kSize = 31;
         this->chunk_size = batchSize;
 
         std::cerr << "Loading index ..." << std::endl;
-        this->ckf = colored_kDataFrame::load(index_prefix);
-        this->kf = this->ckf->getkDataFrame();
-        this->kSize = this->kf->getkSize();
+
+        string filePath = idx_prefix + ".phmap";
+
+        {
+            phmap::BinaryInputArchive ar_in(filePath.c_str());
+            this->phmap_kmers.load(ar_in);
+        }
+
+//        this->ckf = colored_kDataFrame::load(index_prefix);
+//        this->kf = this->ckf->getkDataFrame();
+//        this->kSize = this->kf->getkSize();
         std::cerr << "kProcessor index loaded successfully ..." << std::endl;
     }
 
