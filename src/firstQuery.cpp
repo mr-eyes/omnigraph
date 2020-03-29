@@ -60,27 +60,27 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
     } else {
         // That mean both are zeros so both could not be found
         // Case 3
-        int noKmers = kmers.size();
-        // assert(noKmers <= 120);
+        double noKmers = (double)kmers.size();
+
         vector<uint64_t> all_colors;
 
         phmap::flat_hash_set<uint64_t> unique_colors;
-        phmap::flat_hash_map<bool, int> found_count;
+        double found_count = 0;
 
 
         // Get all the colors
         for (const auto &kmer: kmers) {
-            uint64_t color = kf->getCount(kmer.hash);
-            found_count[bool(color)]++;
+            uint64_t color = kf->getCount(kmer.hash); // This line is a landmine, take care.
+            if(color != 0){
+                found_count++;
+            }
             all_colors.push_back(color);
             unique_colors.insert(color);
         }
 
-        // assert(all_colors.size() <= 120);
-        // assert(found_count[0] + found_count[1] == 120);
 
         // Check found Vs. unfound
-        if ((found_count[1] / noKmers) < 0.5) {
+        if ((found_count / noKmers) < 0.5) {
             // not aligned read
 
             scenario = 3;
@@ -116,16 +116,16 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
 
                 while (it != all_colors.end()) {
                     if (*it != 0) {
-                        cout << "*it = " << *it << endl;
+                        // cout << "*it = " << *it << endl;
                         start_kmer = distance(all_colors.begin(), it);
-                        cout << "start_kmer = " << start_kmer << endl;
+                        // cout << "start_kmer = " << start_kmer << endl;
                         auto rev_it = all_colors.end();
                         while (rev_it != it) {
                             rev_it--;
                             if (*rev_it != 0) {
-                                cout << "*rev_it = " << *rev_it << endl;
+                                // cout << "*rev_it = " << *rev_it << endl;
                                 end_kmer = distance(all_colors.begin(), rev_it);
-                                cout << "end_kmer = " << end_kmer << endl;
+                                // cout << "end_kmer = " << end_kmer << endl;
                                 it = all_colors.end();
                                 break;
                             }
@@ -138,7 +138,7 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
                 scenario = 5;
                 this->scenarios_count[PE][scenario]++;
 
-                cout << "START(" << start_kmer << ") | END = (" << end_kmer << ") \n";
+                // cout << "START(" << start_kmer << ") | END = (" << end_kmer << ") \n";
 
                 vector<kmer_row> sliced_kmers = std::vector<kmer_row>(kmers.begin() + start_kmer,
                                                                       kmers.begin() + end_kmer + 1);
@@ -177,8 +177,6 @@ void firstQuery::start_query() {
         READ_1_KMERS->next_chunk();
         READ_2_KMERS->next_chunk();
 
-        // cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks << ") ..." << endl;
-        // cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks << ") ..." << endl;
 
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1 = READ_1_KMERS->getKmers()->begin();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2 = READ_2_KMERS->getKmers()->begin();
