@@ -29,5 +29,12 @@ add_executable (query_1 first_query.cpp ${OMNIGRAPH_SRC})
 target_link_libraries (query_1 kProcessor pthread z)
 target_include_directories(query_1 INTERFACE ${kProcessor_INCLUDE_PATH} ${FQFeeder_INCLUDE_PATH})
 
+
+add_executable (phmapTest phmapHeavyTest.cpp)
+target_link_libraries (phmapTest kProcessor pthread z)
+target_include_directories(phmapTest INTERFACE ${kProcessor_INCLUDE_PATH} ${FQFeeder_INCLUDE_PATH})
+
+
+
 #add_executable (kmersToSeq kmers_to_seq.cpp)
 #add_executable (slice slice.cpp)
