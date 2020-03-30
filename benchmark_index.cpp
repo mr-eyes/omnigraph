@@ -16,9 +16,6 @@ int main(){
 
     string mqf_index = "../idx_cDBG_SRR11015356_k31unitigs/mqf_idx_idx_cDBG_SRR11015356_k31unitigs";
 
-    
-
-
 
         phmap::flat_hash_map<uint64_t, uint64_t> kmers;
         {
@@ -33,14 +30,8 @@ int main(){
 //    kDataFrame * kmers = kDataFrame::load(filePath);
 
     std::cout << "Loaded " << kmers.size() <<  " Kmers .." << endl;
-    int chunk_size = 50000;
-    kmerDecoder *KD = new Kmers(PE_1_reads_file, chunk_size, 31);
-//    KD->setHashingMode(kmers->KD->hash_mode);
 
-    int no_of_sequences = 67954363;
-    int no_chunks = no_of_sequences / chunk_size;
-    int Reads_chunks_counter = 0;
-
+/*
     std::cout << "Iterations" << endl;
 
     uint64_t mqfKmersCount = 0;
@@ -52,7 +43,7 @@ int main(){
     }
 
    std::cout << "mqf.size() = " << mqf->size() << ", actual_kmers = " << mqfKmersCount << endl;
-    
+
     uint64_t mqf_phmap_mismatches = 0;
 
     for(const auto & phmap_it : kmers){
@@ -65,6 +56,18 @@ int main(){
     }
     
    std::cout << "MQF & PHMAP Mismatches = " << mqf_phmap_mismatches << endl;
+
+*/
+
+
+    int chunk_size = 50000;
+    kmerDecoder *KD = new Kmers(PE_1_reads_file, chunk_size, 31);
+    KD->setHashingMode(1);
+
+    int no_of_sequences = 67954363;
+    int no_chunks = no_of_sequences / chunk_size;
+    int Reads_chunks_counter = 0;
+    
 
    std::cout << "\n\n-----------------------------------\n Querying the SRR Reads\n" << endl; 
 
@@ -80,21 +83,29 @@ int main(){
         for (const auto &seq : *KD->getKmers()) {
             // std::cout << "Read ID: " << seq.first << std::endl;
 
-            for (const auto &kmer : seq.second) {                
+            for (const auto &kmer : seq.second) {
+                uint64_t phmap_new_color,phmap_old_color, mqf_color;
 
                 phmap::flat_hash_map<uint64_t,uint64_t>::const_iterator got = kmers.find(kmer.hash);
-                uint64_t phmap_new_color,phmap_old_color, mqf_color;
-                
+
+                phmap_old_color = kmers[kmer.hash];
+                mqf_color = mqf->getCount(kmer.hash);
+
+
                 if ( got == kmers.end() )
                     phmap_new_color = 0;
                 else
                     phmap_new_color = got->second;
 
-                phmap_old_color = kmers[kmer.hash];
-                mqf_color = mqf->getCount(kmer.hash);
+                
 
                 if(mqf_color != phmap_new_color){
                     mqf_newPhmap_mismatches++;
+                    std::cout << "kmer: " << kmer.str
+                            << " | phmap_new_color :" << phmap_new_color
+                            << " | phmap_old_color :" << phmap_old_color
+                            << " | mqf_color :" << mqf_color << std::endl;
+
                 }
 
                 if(mqf_color != phmap_old_color){
@@ -119,8 +130,8 @@ int main(){
         milli = milli - 60000 * min;
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
-//        std::cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
-//        std::cerr << min << ":" << sec << ":" << milli << endl;
+        std::cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
+        std::cerr << min << ":" << sec << ":" << milli << endl;
     }
 
 
