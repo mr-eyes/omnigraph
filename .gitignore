@@ -1,0 +1,16 @@
+
+.history/
+
+.vscode/
+
+.idea/
+
+build/
+
+playground/
+
+data/
+
+.ipynb_checkpoints/
+
+cmake-build-debug/

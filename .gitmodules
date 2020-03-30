@@ -2,3 +2,6 @@
 	path = lib/kProcessor
 	url = https://github.com/dib-lab/kProcessor.git
 	branch = beta_v1
+[submodule "lib/inih"]
+	path = lib/inih
+	url = https://github.com/jtilly/inih.git
