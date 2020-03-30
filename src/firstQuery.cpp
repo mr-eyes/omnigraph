@@ -24,12 +24,12 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
 
     /*
      * scenarios:
-     *  1: Mapped: from matching the first and last kmers only.
-     *  2: Unmapped: one of the two terminal kmers not matched.
-     *  3: Unmapped: Both of the terminal kmers not matched & < %50 of kmers unmatched.
-     *  4: Unmapped: Both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
-     *  5: Mapped: Partial match and read is trimmed.
-     *  6: UnMapped: There's no single matched kmer.
+        1 "Mapped: from matching the first and last kmers only."
+        2 "Unmapped: Both terminal kmers matched but on different components."
+        3 "Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched."
+        4 "Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1."
+        5 "Mapped: Partial match and read is trimmed."
+        6 "Unmapped: There's no single matched kmer."
      * */
 
     string constructed_read;
@@ -60,7 +60,7 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
     } else {
         // That mean both are zeros so both could not be found
         // Case 3
-        double noKmers = (double)kmers.size();
+        double noKmers = (double) kmers.size();
 
         vector<uint64_t> all_colors;
 
@@ -71,7 +71,7 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
         // Get all the colors
         for (const auto &kmer: kmers) {
             uint64_t color = kf->getCount(kmer.hash); // This line is a landmine, take care.
-            if(color != 0){
+            if (color != 0) {
                 found_count++;
             }
             all_colors.push_back(color);
@@ -112,7 +112,14 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
                 start_kmer = 0;
                 end_kmer = 0;
                 auto it = all_colors.begin();
-                uint64_t _matched_color = 0;
+                uint64_t collectiveComponent;
+
+                for (auto _color : unique_colors) {
+                    if (_color != 0) {
+                        collectiveComponent = _color;
+                        break;
+                    }
+                }
 
                 while (it != all_colors.end()) {
                     if (*it != 0) {
@@ -138,16 +145,13 @@ tuple<string, bool, int, uint64_t> firstQuery::classifyQuery(std::vector<kmer_ro
                 scenario = 5;
                 this->scenarios_count[PE][scenario]++;
 
-                // cout << "START(" << start_kmer << ") | END = (" << end_kmer << ") \n";
-
                 vector<kmer_row> sliced_kmers = std::vector<kmer_row>(kmers.begin() + start_kmer,
                                                                       kmers.begin() + end_kmer + 1);
-
-                // assert(sliced_kmers.size() < );
                 constructed_read = kmers_to_seq(sliced_kmers);
-                return make_tuple(constructed_read, true, scenario, _matched_color);
 
-            }else{
+                return make_tuple(constructed_read, true, scenario, collectiveComponent);
+
+            } else {
                 scenario = 6;
                 this->scenarios_count[PE][scenario]++;
                 constructed_read = kmers_to_seq(kmers);
@@ -188,38 +192,31 @@ void firstQuery::start_query() {
             tuple<string, bool, int, uint64_t> read_1_result = this->classifyQuery(seq1->second, 1);
             tuple<string, bool, int, uint64_t> read_2_result = this->classifyQuery(seq2->second, 2);
 
-             // out << "seq1: " << seq1->first << " | seq2: " << seq2->first << endl;
 
-//            string read_1_constructedRead = get<0>(read_1_result);
-//            bool read_1_mapped_flag = get<1>(read_1_result);
-//            int read_1_scenario = get<2>(read_1_result);
-//
-//            if (read_1_scenario == 6 ){
-//                cout << seq1->first << "\n" << kmers_to_seq(seq1->second) << "\n\n";
-//            }
-//
-//            string read_2_constructedRead = get<0>(read_2_result);
-//            bool read_2_mapped_flag = get<1>(read_2_result);
-//            int read_2_scenario = get<2>(read_2_result);
-            
+            string read_1_constructedRead = get<0>(read_1_result);
+            bool read_1_mapped_flag = get<1>(read_1_result);
+            int read_1_scenario = get<2>(read_1_result);
+
+            string read_2_constructedRead = get<0>(read_2_result);
+            bool read_2_mapped_flag = get<1>(read_2_result);
+            int read_2_scenario = get<2>(read_2_result);
+
 
             seq1++;
             seq2++;
         }
 
-            std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-            auto milli = std::chrono::duration_cast<std::chrono::milliseconds>( t2 - t1 ).count();
 
-
-
-            long hr = milli / 3600000;
-            milli = milli - 3600000 * hr;
-            long min = milli / 60000;
-            milli = milli - 60000 * min;
-            long sec = milli / 1000;
-            milli = milli - 1000 * sec;
-            cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
-            cout << min << ":" << sec << ":" << milli << endl;
+        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+        auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+        long hr = milli / 3600000;
+        milli = milli - 3600000 * hr;
+        long min = milli / 60000;
+        milli = milli - 60000 * min;
+        long sec = milli / 1000;
+        milli = milli - 1000 * sec;
+        cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / (" << no_chunks << ") in ";
+        cout << min << ":" << sec << ":" << milli << endl;
 
     }
 

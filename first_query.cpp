@@ -18,7 +18,14 @@ int main(int argc, char **argv) {
     Query->start_query();
 
     for(int p = 1; p <= 2; p++){
-        cout << "Paired End File: " << p << endl; 
+        double total = 0;
+        for(int scenario = 1; scenario <= 6; scenario++)
+            total += Query->scenarios_count[p][scenario];
+
+        double mapped_percentage = (Query->scenarios_count[p][1] + Query->scenarios_count[p][5]);
+        mapped_percentage = (mapped_percentage / total) * 100;
+
+        cout << "Paired End File: " << p << " | mapped_reads  %" << mapped_percentage << endl;
         for(int scenario = 1; scenario <= 6; scenario++){
             int count = Query->scenarios_count[p][scenario];
             string description = Query->scenario_descriptions[scenario];
