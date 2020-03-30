@@ -91,7 +91,7 @@ int main(){
                     phmap_new_color = got->second;
 
                 phmap_old_color = kmers[kmer.hash];
-                mqf_color = mqf->getCount(kmer.str);
+                mqf_color = mqf->getCount(kmer.hash);
 
                 if(mqf_color != phmap_new_color){
                     mqf_newPhmap_mismatches++;
