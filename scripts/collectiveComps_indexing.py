@@ -56,8 +56,8 @@ hashing_mode = params["hashing_mode"] # Integer
 chunk_size = params["chunk_size"]
 Q = params["q"]
 
-# kf_MQF = kp.kDataFrameMQF(kSize, Q , hashing_mode)
-kf_MQF = kp.kDataFramePHMAP(kSize, hashing_mode)
+kf_MQF = kp.kDataFrameMQF(kSize, Q , hashing_mode)
+# kf_MQF = kp.kDataFramePHMAP(kSize, hashing_mode)
 
 start_time = time.time()
 
@@ -68,7 +68,7 @@ indexing_time = time.time() - start_time
 
 print("saving cKF ...")
 
-ckf.save(idx_dir + '/' + "idx_" + idx_dir)
+ckf.save(idx_dir + '/' + "mqf_idx_" + idx_dir)
 
 kf = ckf.getkDataFrame()
 

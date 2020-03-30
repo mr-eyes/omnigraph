@@ -34,7 +34,9 @@ add_executable (phmapTest phmapHeavyTest.cpp)
 target_link_libraries (phmapTest kProcessor pthread z)
 target_include_directories(phmapTest INTERFACE ${kProcessor_INCLUDE_PATH} ${FQFeeder_INCLUDE_PATH})
 
-
+add_executable (benchmark benchmark_index.cpp)
+target_link_libraries (benchmark kProcessor pthread z)
+target_include_directories(benchmark INTERFACE ${kProcessor_INCLUDE_PATH} ${FQFeeder_INCLUDE_PATH})
 
 #add_executable (kmersToSeq kmers_to_seq.cpp)
 #add_executable (slice slice.cpp)
