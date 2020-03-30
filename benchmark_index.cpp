@@ -41,6 +41,38 @@ int main(){
     int no_chunks = no_of_sequences / chunk_size;
     int Reads_chunks_counter = 0;
 
+    std::cout << "Iterations" << endl;
+
+    uint64_t mqfKmersCount = 0;
+
+    auto mqf_it = mqf->begin();
+    while(mqf_it != mqf->end()){
+        mqfKmersCount++;
+        mqf_it++;
+    }
+
+   std::cout << "mqf.size() = " << mqf->size() << ", actual_kmers = " << mqfKmersCount << endl;
+    
+    uint64_t mqf_phmap_mismatches = 0;
+
+    for(const auto & phmap_it : kmers){
+        uint64_t kmerHash = phmap_it.first;
+        uint64_t phmap_kmerColor = phmap_it.second;
+        uint64_t mqf_kmerColor = mqf->getCount(kmerHash);
+
+        if(phmap_kmerColor != mqf_kmerColor) mqf_phmap_mismatches++;
+        
+    }
+    
+   std::cout << "MQF & PHMAP Mismatches = " << mqf_phmap_mismatches << endl;
+
+   std::cout << "\n\n-----------------------------------\n Querying the SRR Reads\n" << endl; 
+
+    uint64_t phmap_old_new_mismatches = 0;
+    uint64_t mqf_newPhmap_mismatches = 0;
+    uint64_t mqf_oldPhmap_mismatches = 0;
+
+   
     while (!KD->end()) {
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
         KD->next_chunk();
@@ -62,11 +94,15 @@ int main(){
                 mqf_color = mqf->getCount(kmer.str);
 
                 if(mqf_color != phmap_new_color){
-                    cout << kmer.str << ":" << "mqf(" << mqf_color << "), new_phmap( " << phmap_new_color << ")" << endl;
+                    mqf_newPhmap_mismatches++;
+                }
+
+                if(mqf_color != phmap_old_color){
+                    mqf_oldPhmap_mismatches++;
                 }
 
                 if(phmap_new_color != phmap_old_color){
-                    cout << kmer.str << ":" << "old_phmap(" << phmap_old_color << "), new_phmap( " << phmap_new_color << ")" << endl;
+                    phmap_old_new_mismatches++;
                 }
 
             }
@@ -83,9 +119,14 @@ int main(){
         milli = milli - 60000 * min;
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
-        cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
-        cout << min << ":" << sec << ":" << milli << endl;
+//        std::cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / ("<< no_chunks <<") in ";
+//        std::cerr << min << ":" << sec << ":" << milli << endl;
     }
+
+
+    std::cout << "Query MQF & new_PHMAP Mismatches = " << mqf_newPhmap_mismatches << endl;
+    std::cout << "Query MQF & old_PHMAP Mismatches = " << mqf_oldPhmap_mismatches << endl;
+    std::cout << "Query old_PHMAP & new_PHMAP Mismatches = " << phmap_old_new_mismatches << endl;
 
 
 }
