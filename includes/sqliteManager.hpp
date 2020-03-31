@@ -20,7 +20,7 @@ private:
 
 public:
     SQLiteManager(string db_file);
-
+    void insert_PE(string & R1, string & R2, int & collectiveComp1, int & collectiveComp2);
     void close();
 
 };

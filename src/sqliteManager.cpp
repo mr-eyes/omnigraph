@@ -65,8 +65,26 @@ SQLiteManager::SQLiteManager(string db_file) {
     }
 
     fprintf(stderr, "Done initializing DB.\n");
+    string _sqlite_sync = "PRAGMA synchronous = OFF;";
+    this->rc = sqlite3_exec(this->db, _sqlite_sync.c_str(), this->callback, 0, &this->zErrMsg);
+    if (this->rc != SQLITE_OK) {
+        fprintf(stderr, "SQL error: %s\n", this->zErrMsg);
+        sqlite3_free(this->zErrMsg);
+    }
+
 }
 
 void SQLiteManager::close() {
     sqlite3_close(this->db);
+}
+
+void SQLiteManager::insert_PE(string &R1, string &R2, int &collectiveComp1, int &collectiveComp2) {
+
+    const string _sqlite_insert = "INSERT INTO reads"
+                            "(PE_seq1, PE_seq2, seq1_collective_component, seq2_collective_component, seq1_original_component, seq2_original_component)"
+                            "VALUES"
+                            "('"+ R1 +"', '"+ R2 +"', " + to_string(collectiveComp1) +", "+ to_string(collectiveComp2) +", 0, 0);";
+
+    this->rc = sqlite3_exec(this->db, _sqlite_insert.c_str(), this->callback, 0, &this->zErrMsg);
+
 }
