@@ -17,10 +17,6 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 # echo an error message before exiting
 trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
-# make things fail on errors
-set -o nounset
-set -o errexit
-set -x
 
 # activate conda in general
 . "/home/mhussien/miniconda3/etc/profile.d/conda.sh"
