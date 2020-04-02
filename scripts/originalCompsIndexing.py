@@ -52,7 +52,7 @@ def index(names_file):
     kSize = 31
     kmers_mode = 1
     hashing_mode = 1
-    chunk_size = 5000
+    chunk_size = 100000
     kf_PHMAP = kp.kDataFramePHMAP(kSize, hashing_mode)
     ckf = kp.index(kf_PHMAP, {"mode" : kmers_mode}, fasta_file , chunk_size, names_file)
     os.mkdir(f"idx_{idx_suffix}")
