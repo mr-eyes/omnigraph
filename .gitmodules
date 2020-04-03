@@ -5,6 +5,3 @@
 [submodule "lib/inih"]
 	path = lib/inih
 	url = https://github.com/jtilly/inih.git
-[submodule "lib/SQLiteCPP"]
-	path = lib/SQLiteCPP
-	url = https://github.com/SRombauts/SQLiteCpp
