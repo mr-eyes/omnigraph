@@ -5,13 +5,13 @@
 #include <sqlite3.h>
 #include <string>
 #include "iostream"
+#include "sqlite3pp.h"
 
 using namespace std;
 
 class SQLiteManager {
 
 private:
-    sqlite3 *db;
     char *zErrMsg = 0;
     int rc;
 
@@ -19,6 +19,7 @@ private:
 
 
 public:
+    sqlite3pp::database db;
     SQLiteManager(string db_file);
     void insert_PE(string & R1, string & R2, int & collectiveComp1, int & collectiveComp2);
     void close();

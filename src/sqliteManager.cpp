@@ -1,4 +1,5 @@
 #include "sqliteManager.hpp"
+#include "sqlite3pp.h"
 
 
 int SQLiteManager::callback(void *NotUsed, int argc, char **argv, char **azColName) {
@@ -12,19 +13,10 @@ int SQLiteManager::callback(void *NotUsed, int argc, char **argv, char **azColNa
 
 SQLiteManager::SQLiteManager(string db_file) {
 
-    this->rc = sqlite3_open(db_file.c_str(), &this->db);
-
-    if (this->rc) {
-        fprintf(stderr,
-                "Can't open database: %s\n", sqlite3_errmsg(this->db));
-        exit(1);
-    } else {
-        fprintf(stderr,
-                "Opened database successfully\n");
-    }
+    this->db = sqlite3pp::database (db_file.c_str());
 
     string _sqlite_checkTable = "SELECT ID FROM reads LIMIT 1";
-    this->rc = sqlite3_exec(this->db, _sqlite_checkTable.c_str(), this->callback, 0, &this->zErrMsg);
+    this->rc = sqlite3_exec(this->db.db_, _sqlite_checkTable.c_str(), this->callback, 0, &this->zErrMsg);
 
     if (this->rc) {
 
@@ -41,9 +33,9 @@ SQLiteManager::SQLiteManager(string db_file) {
                                            "`seq2_original_component`	INTEGER"
                                            ");";
 
-        char *_sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_collective_component, seq2_collective_component);";
+        char *_sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_collective_component);";
 
-        this->rc = sqlite3_exec(this->db, _sqlite_create_table, this->callback, 0, &this->zErrMsg);
+        this->rc = sqlite3_exec(this->db.db_, _sqlite_create_table, this->callback, 0, &this->zErrMsg);
         if (this->rc != SQLITE_OK) {
             fprintf(stderr, "SQL error: %s\n", this->zErrMsg);
             sqlite3_free(this->zErrMsg);
@@ -51,7 +43,7 @@ SQLiteManager::SQLiteManager(string db_file) {
             fprintf(stderr, "Table created successfully\n");
         }
 
-        this->rc = sqlite3_exec(this->db, _sqlite_create_index, this->callback, 0, &this->zErrMsg);
+        this->rc = sqlite3_exec(this->db.db_, _sqlite_create_index, this->callback, 0, &this->zErrMsg);
 
         if (this->rc != SQLITE_OK) {
             fprintf(stderr, "SQL error: %s\n", this->zErrMsg);
@@ -66,7 +58,7 @@ SQLiteManager::SQLiteManager(string db_file) {
 
     fprintf(stderr, "Done initializing DB.\n");
     string _sqlite_sync = "PRAGMA synchronous = OFF;";
-    this->rc = sqlite3_exec(this->db, _sqlite_sync.c_str(), this->callback, 0, &this->zErrMsg);
+    this->rc = sqlite3_exec(this->db.db_, _sqlite_sync.c_str(), this->callback, 0, &this->zErrMsg);
     if (this->rc != SQLITE_OK) {
         fprintf(stderr, "SQL error: %s\n", this->zErrMsg);
         sqlite3_free(this->zErrMsg);
@@ -75,7 +67,7 @@ SQLiteManager::SQLiteManager(string db_file) {
 }
 
 void SQLiteManager::close() {
-    sqlite3_close(this->db);
+    sqlite3_close(this->db.db_);
 }
 
 void SQLiteManager::insert_PE(string &R1, string &R2, int &collectiveComp1, int &collectiveComp2) {
@@ -85,6 +77,6 @@ void SQLiteManager::insert_PE(string &R1, string &R2, int &collectiveComp1, int 
                             "VALUES"
                             "('"+ R1 +"', '"+ R2 +"', " + to_string(collectiveComp1) +", "+ to_string(collectiveComp2) +", 0, 0);";
 
-    this->rc = sqlite3_exec(this->db, _sqlite_insert.c_str(), this->callback, 0, &this->zErrMsg);
+    this->rc = sqlite3_exec(this->db.db_, _sqlite_insert.c_str(), this->callback, 0, &this->zErrMsg);
 
 }
