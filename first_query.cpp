@@ -122,6 +122,9 @@ int main(int argc, char **argv) {
     }
 
     SQL->close();
+    delete kf;
+    delete READ_1_KMERS;
+    delete READ_2_KMERS;
 
     return 0;
 }
