@@ -23,9 +23,23 @@ include_directories (${kProcessor_INCLUDE_PATH})
 
 include_directories("${PROJECT_SOURCE_DIR}/includes")
 include_directories("${PROJECT_SOURCE_DIR}/lib/inih")
+include_directories(${PROJECT_SOURCE_DIR}/lib/sqlite3pp/)
 
 file(GLOB OMNIGRAPH_SRC "src/*.cpp")
 
-add_executable (query_1 first_query.cpp ${OMNIGRAPH_SRC})
+add_executable (query_1 first_query.cpp src/omnigraph.cpp src/sqliteManager.cpp)
 target_link_libraries (query_1 kProcessor pthread z sqlite3)
 target_include_directories(query_1 INTERFACE ${kProcessor_INCLUDE_PATH})
+
+#add_executable (query_2 second_query.cpp src/secondQuery.cpp)
+#target_link_libraries (query_2 kProcessor pthread z sqlite3)
+#target_include_directories(query_2 INTERFACE ${kProcessor_INCLUDE_PATH})
+
+#add_executable (sqlite testSqlite.cpp src/sqliteManager.cpp)
+#target_link_libraries (sqlite sqlite3 kProcessor pthread dl)
+#target_include_directories(sqlite INTERFACE ${kProcessor_INCLUDE_PATH})
+
+
+#add_executable (singleQuery first_query.cpp src/singleQuery.cpp src/sqliteManager.cpp)
+#target_link_libraries (singleQuery kProcessor pthread z sqlite3)
+#target_include_directories(singleQuery INTERFACE ${kProcessor_INCLUDE_PATH})
