@@ -11,7 +11,7 @@ using namespace std;
 
 class SQLiteManager {
 
-private:
+public:
     char *zErrMsg = 0;
     int rc;
 
