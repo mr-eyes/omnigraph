@@ -107,7 +107,7 @@ public:
 int main() {
 
     string config_file_path = "../config.ini";
-    string index_prefix, PE_1_reads_file, PE_2_reads_file, sqlite_db, collective_comps_indexes_dir;
+    string index_prefix, PE_1_reads_file, PE_2_reads_file, sqlite_db, collective_comps_indexes_dir, fasta_out;
     int batchSize, kSize, no_of_sequences;
 
     INIReader reader(config_file_path);
@@ -124,6 +124,7 @@ int main() {
     PE_2_reads_file = reader.Get("Reads", "read2", "");
     no_of_sequences = reader.GetInteger("Reads", "seqs_no", 0);
     sqlite_db = reader.Get("SQLite", "db_file", "query1_result.db");
+    fasta_out = reader.Get("output_fasta", "fasta_dir", "fasta_out");
     batchSize = reader.GetInteger("kProcessor", "chunk_size", 1);
     kSize = reader.GetInteger("kProcessor", "ksize", 31);
 
@@ -138,7 +139,7 @@ int main() {
     map<int, map<int, fileHandler * >> fasta_writer;
 
     // create main dir
-    string out_dir = create_dir("fasta_out", 0);
+    string out_dir = create_dir(fasta_out, 0);
 
     // create PE1 directory
     string R1_dir = create_dir(out_dir + "/" + "R1", 0);
@@ -193,7 +194,7 @@ int main() {
         int collectiveCompID = idx.first;
         kf = kDataFrame::load(idx.second);
 
-        cerr << "Processing collective component (" << idx.first << ") ..." << endl;
+        cerr << "Processing collective component (" << idx.first << ") ... ";
         chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
 
         for (int R_ID = 1; R_ID <= 2; R_ID++) {
@@ -217,9 +218,6 @@ int main() {
                 bool mapped_flag = get<1>(read_result);
                 int seq_original_component = get<2>(read_result);
 
-
-                if (mapped_flag) {
-
                     // Header (R_ID|CompID)
                     string fasta_read = ">" + to_string(ROW_ID) + "|" + to_string(seq_original_component) + "\n";
 
@@ -228,7 +226,6 @@ int main() {
 
                     // Write
                     fasta_writer[R_ID][collectiveCompID]->write(fasta_read);
-                }
 
             }
 
@@ -243,8 +240,7 @@ int main() {
         milli = milli - 60000 * min;
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
-        cerr << "Processing collective components: (" << idx.first << ") in ";
-        cout << min << ":" << sec << ":" << milli << endl;
+        cout << " Done in " << min << ":" << sec << ":" << milli << endl;
 
         delete kf;
     }
