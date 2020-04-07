@@ -7,8 +7,11 @@
 #include <stdexcept>
 #include "omnigraph.hpp"
 #include "tuple"
+#include <sys/stat.h>
+#include <fstream>
 
 using namespace std;
+using namespace phmap;
 
 string getFileName(const string &s) {
 
@@ -27,7 +30,7 @@ string getFileName(const string &s) {
 }
 
 
-std::vector<std::string> glob(const std::string &pattern) {
+vector<string> glob(const string &pattern) {
     using namespace std;
 
     // glob struct resides on the stack
@@ -40,10 +43,10 @@ std::vector<std::string> glob(const std::string &pattern) {
         globfree(&glob_result);
         stringstream ss;
         ss << "glob() failed with return_value " << return_value << endl;
-        throw std::runtime_error(ss.str());
+        throw runtime_error(ss.str());
     }
 
-    // collect all the filenames into a std::list<std::string>
+    // collect all the filenames into a list<string>
     vector<string> filenames;
     for (size_t i = 0; i < glob_result.gl_pathc; ++i) {
         filenames.push_back(string(glob_result.gl_pathv[i]));
@@ -56,6 +59,22 @@ std::vector<std::string> glob(const std::string &pattern) {
     return filenames;
 }
 
+string create_dir(string output_file, int serial) {
+    int dir_err;
+    string new_name = "";
+
+    if (!serial) {
+        dir_err = mkdir(output_file.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        new_name = output_file;
+    } else {
+        new_name = output_file + "_v." + to_string(serial);
+        dir_err = mkdir(new_name.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    }
+
+    if (-1 == dir_err) return create_dir(output_file, ++serial);
+
+    return new_name;
+}
 
 const string prepare_update(int ID, int seq1_original_component, int seq2_original_component) {
     const string _sqlite_update = "UPDATE reads SET "
@@ -66,6 +85,25 @@ const string prepare_update(int ID, int seq1_original_component, int seq2_origin
     return _sqlite_update;
 }
 
+class fileHandler {
+
+public:
+    ofstream fileStream;
+
+    fileHandler(string &filename) {
+        this->fileStream.open(filename);
+    }
+
+    void write(string &line) {
+        this->fileStream << line;
+    }
+
+    void close() {
+        fileStream.close();
+    }
+
+};
+
 int main() {
 
     string config_file_path = "../config.ini";
@@ -75,7 +113,7 @@ int main() {
     INIReader reader(config_file_path);
 
     if (reader.ParseError() != 0) {
-        std::cout << "Can't load '" << config_file_path << "'\n";
+        cout << "Can't load '" << config_file_path << "'\n";
         return 1;
     }
 
@@ -91,14 +129,41 @@ int main() {
 
     cerr << "Fetch kProcessor indexes paths ..." << endl;
 
-    std::vector<std::string> filenames = glob(collective_comps_indexes_dir);
-    std::map<int, string> index_paths;
+    vector<string> filenames = glob(collective_comps_indexes_dir);
+    map<int, string> index_paths;
+
+    int collectiveComps_no = filenames.size();
+
+    // Create fasta files handlers, {R1,2: {comp : path}}
+    map<int, map<int, fileHandler * >> fasta_writer;
+
+    // create main dir
+    string out_dir = create_dir("fasta_out", 0);
+
+    // create PE1 directory
+    string R1_dir = create_dir(out_dir + "/" + "R1", 0);
+
+    // create PE2 directory
+    string R2_dir = create_dir(out_dir + "/" + "R2", 0);
+
+    map<int, string> R_dirs = {
+            {1, R1_dir},
+            {2, R2_dir}
+    };
+
+    // Creating fasta files (2xCollectiveCompsNo)
+    for (int R = 1; R <= 2; R++) {
+        for (int compID = 1; compID <= collectiveComps_no; compID++) {
+            string file_name = R_dirs[R] + "/" + to_string(compID) + ".fa";
+            fasta_writer[R][compID] = new fileHandler(file_name);
+        }
+    }
 
 
     for (auto &filename : filenames) {
         string _base_name, _index_prefix;
         _base_name = getFileName(filename);
-        int idx_no = std::stoi(_base_name.substr(4, 3));
+        int idx_no = stoi(_base_name.substr(4, 3));
         _index_prefix.append(filename + "/" + _base_name);
         index_paths[idx_no] = _index_prefix;
     }
@@ -106,7 +171,7 @@ int main() {
     kDataFrame *kf;
     Omnigraph *second_query = new Omnigraph();
     kmerDecoder *KD = new Kmers(kSize);
-    std::vector<kmer_row> kmers;
+    vector<kmer_row> kmers;
 
     string db_file;
     auto *SQL = new SQLiteManager(sqlite_db);
@@ -115,7 +180,7 @@ int main() {
     string _sqlite_sync = "PRAGMA synchronous = OFF;";
     SQL->rc = sqlite3_exec(SQL->db.db_, _sqlite_sync.c_str(), SQL->callback, 0, &SQL->zErrMsg);
 
-    std::map<int, string> queries = {
+    map<int, string> queries = {
             {1, "SELECT ID, PE_seq1 FROM reads WHERE seq1_collective_component="},
             {2, "SELECT ID, PE_seq2 FROM reads WHERE seq2_collective_component="},
     };
@@ -125,46 +190,53 @@ int main() {
                                   + " WHERE ID=" + to_string(1) + ";";
 
     for (const auto &idx : index_paths) {
+        int collectiveCompID = idx.first;
         kf = kDataFrame::load(idx.second);
 
         cerr << "Processing collective component (" << idx.first << ") ..." << endl;
-        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+        chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
 
-        for (int PEcollectiveComponents = 1; PEcollectiveComponents <= 2; PEcollectiveComponents++) {
-            const string _sqlite_select = queries[PEcollectiveComponents] + std::to_string(idx.first) + ";";
+        for (int R_ID = 1; R_ID <= 2; R_ID++) {
+            const string _sqlite_select = queries[R_ID] + to_string(idx.first) + ";";
 
             sqlite3pp::query qry(SQL->db, _sqlite_select.c_str());
 
             // Iterate over the database reads
             for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i) {
-                int ID;
+                int ROW_ID;
                 const char *PE_seq;
 
-                std::tie(ID, PE_seq) = (*i).get_columns < int, char const* > (0, 1);
+                tie(ROW_ID, PE_seq) = (*i).get_columns < int, char const* > (0, 1);
 
                 string seq = PE_seq;
                 KD->seq_to_kmers(seq, kmers);
                 tuple<string, bool, int, uint64_t> read_result = second_query->classifyRead(kf, kmers,
-                                                                                            PEcollectiveComponents);
+                                                                                            R_ID);
 
-                string read_1_constructedRead = get<0>(read_result);
-                bool read_1_mapped_flag = get<1>(read_result);
+                string constructedRead = get<0>(read_result);
+                bool mapped_flag = get<1>(read_result);
                 int seq_original_component = get<2>(read_result);
 
-                const string _sqlite_update = "UPDATE reads SET "
-                                              "seq" + to_string(PEcollectiveComponents) + "_original_component=" +
-                                              to_string(seq_original_component)
-                                              + " WHERE ID=" + to_string(ID) + ";";
 
+                if (mapped_flag) {
 
-                SQL->rc = sqlite3_exec(SQL->db.db_, _sqlite_update.c_str(), SQL->callback, 0, &SQL->zErrMsg);
+                    // Header (R_ID|CompID)
+                    string fasta_read = ">" + to_string(ROW_ID) + "|" + to_string(seq_original_component) + "\n";
+
+                    // Read
+                    fasta_read.append(constructedRead + "\n");
+
+                    // Write
+                    fasta_writer[R_ID][collectiveCompID]->write(fasta_read);
+                }
+
             }
 
 
         }
 
-        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-        auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+        chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
+        auto milli = chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
         long hr = milli / 3600000;
         milli = milli - 3600000 * hr;
         long min = milli / 60000;
@@ -179,6 +251,13 @@ int main() {
 
     delete KD;
     SQL->close();
+
+    // Closing all fasta files
+    for (int R = 1; R <= 2; R++) {
+        for (int compID = 1; compID <= collectiveComps_no; compID++) {
+            fasta_writer[R][compID]->close();
+        }
+    }
 
 
     return 0;
