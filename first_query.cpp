@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
+        cerr << "processing chunk: (" << ++Reads_chunks_counter << ") / (" << no_chunks << ") ... ";
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
         READ_1_KMERS->next_chunk();
@@ -95,7 +96,7 @@ int main(int argc, char **argv) {
         milli = milli - 60000 * min;
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
-        cerr << "processed chunk: (" << ++Reads_chunks_counter << ") / (" << no_chunks << ") in ";
+        cerr << "Done in: ";
         cout << min << ":" << sec << ":" << milli << endl;
 
     }
