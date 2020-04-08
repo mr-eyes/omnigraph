@@ -24,7 +24,21 @@ conda activate omnigraph
 
 cd /home/mhussien/omnigraph/build
 
-/usr/bin/time -v ./query_1 &> /home/mhussien/omnigraph/logs/fullData_firstQuery.log
+# make a directory specific to user and job
+export MYTMP=/scratch/${USER}/slurm_${SLURM_JOBID}
+mkdir -p ${MYTMP}
+
+# force clean it up
+function cleanup() { rm -rf $MYTMP; }
+trap cleanup EXIT
+
+# <run your code, telling it to use that dir;
+echo running in $(pwd)
+
+/usr/bin/time -v ./query_1 ${MYTMP}/scratch_query1_result.db &> /home/mhussien/omnigraph/logs/fullData_firstQuery.log
+cp ${MYTMP}/scratch_query1_result.db ${SLURM_SUBMIT_DIR}
+
+scontrol show job ${SLURM_JOB_ID}     # Print out final statistics about resource uses before job exits
 
 # Print out values of the current jobs SLURM environment variables
 env | grep SLURM
