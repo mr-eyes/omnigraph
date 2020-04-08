@@ -21,15 +21,12 @@ Example:
 
 """
 
-import sys
-import subprocess
-from tqdm import tqdm
-import os
-import shutil
 import glob
-import kProcessor as kp
-import time
 import multiprocessing
+import os
+import sys
+
+import kProcessor as kp
 
 names = list()
 fasta_file = str()
@@ -48,13 +45,13 @@ else:
 def index(names_file):
     global fasta_file
     idx_suffix = os.path.basename(names_file).replace(".fa.names", "")
-    print(f"Indexing {idx_suffix} ...", file = sys.stderr)
+    print(f"Indexing {idx_suffix} ...", file=sys.stderr)
     kSize = 31
     kmers_mode = 1
     hashing_mode = 1
     chunk_size = 100000
     kf_PHMAP = kp.kDataFramePHMAP(kSize, hashing_mode)
-    ckf = kp.index(kf_PHMAP, {"mode" : kmers_mode}, fasta_file , chunk_size, names_file)
+    ckf = kp.index(kf_PHMAP, {"mode": kmers_mode}, fasta_file, chunk_size, names_file)
     os.mkdir(f"idx_{idx_suffix}")
     ckf.save(f"idx_{idx_suffix}/idx_{idx_suffix}")
 

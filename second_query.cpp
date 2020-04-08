@@ -137,6 +137,8 @@ int main() {
 
     // Create fasta files handlers, {R1,2: {comp : path}}
     map<int, map<int, fileHandler * >> fasta_writer;
+    // Create TSV files handlers, "R1 comp R2 Comp"
+    map<int, fileHandler *> counts_writer;
 
     // create main dir
     string out_dir = create_dir(fasta_out, 0);
@@ -147,6 +149,9 @@ int main() {
     // create PE2 directory
     string R2_dir = create_dir(out_dir + "/" + "R2", 0);
 
+    // create counts TSV directory
+    string counts_dir = create_dir(out_dir + "/" + "counts", 0);
+
     map<int, string> R_dirs = {
             {1, R1_dir},
             {2, R2_dir}
@@ -156,8 +161,14 @@ int main() {
     for (int R = 1; R <= 2; R++) {
         for (int compID = 1; compID <= collectiveComps_no; compID++) {
             string file_name = R_dirs[R] + "/" + to_string(compID) + ".fa";
+
             fasta_writer[R][compID] = new fileHandler(file_name);
         }
+    }
+
+    for (int compID = 1; compID <= collectiveComps_no; compID++) {
+        string pairs_count = counts_dir + "/" + to_string(compID) + "_pairs_count.tsv";
+        counts_writer[compID] = new fileHandler(pairs_count);
     }
 
 
@@ -173,6 +184,7 @@ int main() {
     Omnigraph *second_query = new Omnigraph();
     kmerDecoder *KD = new Kmers(kSize);
     vector<kmer_row> kmers;
+    flat_hash_map<int, flat_hash_map<int, int>> R_pairs_count;
 
     string db_file;
     auto *SQL = new SQLiteManager(sqlite_db);
@@ -190,13 +202,19 @@ int main() {
                                   "seq1_original_component=" + to_string(1)
                                   + " WHERE ID=" + to_string(1) + ";";
 
+
+
+
+
+    // Start processing each collective component at once.
     for (const auto &idx : index_paths) {
         int collectiveCompID = idx.first;
         kf = kDataFrame::load(idx.second);
 
-        cerr << "Processing collective component (" << idx.first << ") ... ";
+        cerr << "Processing collective component (" << collectiveCompID << ") ... ";
         chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
 
+        // Start processing each R1 & R2 in two loops for a single collective component.
         for (int R_ID = 1; R_ID <= 2; R_ID++) {
             const string _sqlite_select = queries[R_ID] + to_string(idx.first) + ";";
 
@@ -218,19 +236,50 @@ int main() {
                 bool mapped_flag = get<1>(read_result);
                 int seq_original_component = get<2>(read_result);
 
-                    // Header (R_ID|CompID)
-                    string fasta_read = ">" + to_string(ROW_ID) + "|" + to_string(seq_original_component) + "\n";
+                // Header (R_ID|CompID)
+                string fasta_read = ">" + to_string(ROW_ID) + "|" + to_string(seq_original_component) + "\n";
 
-                    // Read
-                    fasta_read.append(constructedRead + "\n");
+                // Read
+                fasta_read.append(constructedRead + "\n");
 
-                    // Write
-                    fasta_writer[R_ID][collectiveCompID]->write(fasta_read);
+                // Write
+                fasta_writer[R_ID][collectiveCompID]->write(fasta_read);
+
+                // Counter
+                R_pairs_count[R_ID][ROW_ID] = seq_original_component;
 
             }
 
 
         }
+
+        // Get unique reads set for the pairwise
+        flat_hash_set<int> all_fragements;
+        for (const auto &PE : R_pairs_count) {
+            for (const auto &RID : PE.second) {
+                all_fragements.insert(RID.first);
+            }
+        }
+
+        for (const auto &fragementID : all_fragements) {
+            int read1_comp = R_pairs_count[1][fragementID];
+            int read2_comp = R_pairs_count[2][fragementID];
+            string _s_fragement = to_string(fragementID);
+            string line = "R" + _s_fragement + ".1";
+            line.append("\t");
+            line.append(to_string(read1_comp));
+            line.append("\t");
+            line.append("R" + _s_fragement + ".2");
+            line.append("\t");
+            line.append(to_string(read2_comp));
+            line.append("\n");
+            counts_writer[collectiveCompID]->write(line);
+
+        }
+
+        counts_writer[collectiveCompID]->close();
+        R_pairs_count.clear();
+
 
         chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
         auto milli = chrono::duration_cast<chrono::milliseconds>(t2 - t1).count();
@@ -248,13 +297,16 @@ int main() {
     delete KD;
     SQL->close();
 
-    // Closing all fasta files
+    // Closing all files
     for (int R = 1; R <= 2; R++) {
         for (int compID = 1; compID <= collectiveComps_no; compID++) {
             fasta_writer[R][compID]->close();
         }
     }
 
+    for (int compID = 1; compID <= collectiveComps_no; compID++) {
+        counts_writer[compID]->close();
+    }
 
     return 0;
 }
