@@ -1,9 +1,9 @@
 #! /bin/bash -login
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
-#SBATCH -p bml
+#SBATCH -p bmh
 #SBATCH -J sgc
-#SBATCH --time=05:00:00
+#SBATCH --time=15:00:00
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 1
@@ -24,7 +24,7 @@ conda activate omnigraph
 
 cd /home/mhussien/omnigraph/build
 
-/usr/bin/time -v ./query_1 &> /home/mhussien/omnigraph/logs/firstQuery.log
+/usr/bin/time -v ./query_1 &> /home/mhussien/omnigraph/logs/fullData_firstQuery.log
 
 # Print out values of the current jobs SLURM environment variables
 env | grep SLURM
