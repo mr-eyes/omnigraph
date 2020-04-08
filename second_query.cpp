@@ -262,8 +262,14 @@ int main() {
         }
 
         for (const auto &fragementID : all_fragements) {
-            int read1_comp = R_pairs_count[1][fragementID];
-            int read2_comp = R_pairs_count[2][fragementID];
+            int read1_comp, read2_comp;
+
+            flat_hash_map<int, int>::const_iterator _it_r1 = R_pairs_count[1].find(fragementID);
+            flat_hash_map<int, int>::const_iterator _it_r2 = R_pairs_count[2].find(fragementID);
+
+            _it_r1 == R_pairs_count[1].end() ? read1_comp = 0 : read1_comp = _it_r1->second;
+            _it_r2 == R_pairs_count[2].end() ? read2_comp = 0 : read2_comp = _it_r2->second;
+
             string _s_fragement = to_string(fragementID);
             string line = "R" + _s_fragement + ".1";
             line.append("\t");
@@ -307,6 +313,8 @@ int main() {
     for (int compID = 1; compID <= collectiveComps_no; compID++) {
         counts_writer[compID]->close();
     }
+
+    cerr << "\nDone writing results in " << out_dir << endl;
 
     return 0;
 }
