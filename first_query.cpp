@@ -33,6 +33,15 @@ int main(int argc, char **argv) {
     batchSize = reader.GetInteger("kProcessor", "chunk_size", 1);
     kSize = reader.GetInteger("kProcessor", "ksize", 31);
 
+    // Temporary solutino for the Farm IO
+    if(argc == 3){
+        cerr << "scanning other sys args .. \n";
+        if(string(argv[1]) == "--db"){
+            cerr << "overriding db_file: found --db = " << argv[2] <<  ".. \n";
+            sqlite_db = argv[2];
+        }
+    }
+
     cerr << "Processing: \nR1: " << PE_1_reads_file << "\nR2: " << PE_2_reads_file << endl;
 
     // Instantiations
