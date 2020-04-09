@@ -104,7 +104,7 @@ public:
 
 };
 
-int main() {
+int main(int argc, char **argv) {
 
     string config_file_path = "../config.ini";
     string index_prefix, PE_1_reads_file, PE_2_reads_file, sqlite_db, collective_comps_indexes_dir, fasta_out;
@@ -127,6 +127,15 @@ int main() {
     fasta_out = reader.Get("output_fasta", "fasta_dir", "fasta_out");
     batchSize = reader.GetInteger("kProcessor", "chunk_size", 1);
     kSize = reader.GetInteger("kProcessor", "ksize", 31);
+
+    // tmp for dynamic paths on the Farm scratch
+    if (argc == 5) {
+        if ((string(argv[1]) == "--db") && (string(argv[3]) == "--out-dir")) {
+            cerr << "overriding sqlite_db_file & fasta_out" << endl;
+            sqlite_db = argv[2];
+            fasta_out = argv[4];
+        }
+    }
 
     cerr << "Fetch kProcessor indexes paths ..." << endl;
 
