@@ -38,11 +38,11 @@ DB_FILE=/home/mhussien/omnigraph/slurm_firstQuery_20290252/query_1.db
 echo "running in $(pwd)"
 
 # Copy database file, to be removed later
-cp $DB_FILE "$MYTMP"/
+cp $DB_FILE "$MYTMP"/query_1.db
 
 /usr/bin/time -v /home/mhussien/omnigraph/build/query_2 --db "${MYTMP}"/query_1.db --out-dir "${MYTMP}"/fasta_out
 
-rm "$MYTMP"/$DB_FILE
+rm "$MYTMP"/query_1.db
 
 cp -r "$MYTMP" "$SLURM_SUBMIT_DIR"
 
