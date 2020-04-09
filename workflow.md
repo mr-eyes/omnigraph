@@ -79,7 +79,7 @@ python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.g
 
 ---
 
-### 3 kProcessor Indexing
+### 3 kProcessor ***Hierarchical*** Indexing
 
 #### 3.1 Generate names file for kProcessor <unitig_header:collectiveCompID>
 
@@ -99,183 +99,53 @@ cat ${UNITIGS}.kmers.fa | grep ">" | wc -l
 
 > Number of kmers **172,670,656**
 
-#### 3.3 **(MQF)** Indexing the 50K Collective component
+#### 3.3 **(PHMAP)** Indexing the 180 Collective component (First level indexing)
 
-##### Trial 1 (-56,404,746 Kmers)
-
-```ini
-[kProcessor]
-ksize = 31
-Q = 27
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
+> [TODO] make the script takes the names file separately
 
 ```bash
-python scritps/collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+python scripts/collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
 ```
 
-Stats
+- **Time:** 00:02:30
+- **Mem:** 8.9 GB
 
-```txt
-Indexing time : 0:07:49.865936
-Number of kmers: 116265910
-Index size: 1.4 GB
-```
+#### 3.4 Perform first query
 
-##### Trial 2 (-47,567,281 Kmers)
+This step creates a sqlite DB with columns as following
 
-```ini
-[kProcessor]
-ksize = 31
-Q = 28
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
+- Unique serial ID
+- PE Read 1 (original or trimmed)
+- PE Read 2 (original or trimmed)
+- R1 Collective component ID
+- R2 Collective component ID
 
 ```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
+./build/query_1
+
+<<RESULT
+Paired End File: 1 | mapped_reads  %97.3955
+Scenario (1) : Count: 61043395 | Mapped: from matching the first and last kmers only.
+Scenario (2) : Count: 283071 | Unmapped: Both terminal kmers matched but on different components.
+Scenario (3) : Count: 1279901 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
+Scenario (4) : Count: 206889 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (5) : Count: 5141107 | Mapped: Partial match and read is trimmed.
+Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
+---------------------------------
+Paired End File: 2 | mapped_reads  %94.5279
+Scenario (1) : Count: 57128736 | Mapped: from matching the first and last kmers only.
+Scenario (2) : Count: 323910 | Unmapped: Both terminal kmers matched but on different components.
+Scenario (3) : Count: 3030808 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
+Scenario (4) : Count: 363791 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (5) : Count: 7107118 | Mapped: Partial match and read is trimmed.
+Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
+RESULT
+
 ```
 
-Stats
+- **Time:** 3:49:20
+- **Mem:** 6.56 GB
+- **DB FIle Size:** 24 GB
 
-```txt
-Indexing time : 0:05:54.605237
-Memory: 3.7 GB
-Number of kmers: 125103375
-Index size: 1.4 GB
-```
-
-##### Trial 3 (-23,783,608 Kmers)
-
-```ini
-[kProcessor]
-ksize = 31
-Q = 29
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
-
-```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
-```
-
-Stats
-
-```txt
-Indexing time : 0:05:02.889045
-Memory: 5GB
-Number of kmers: 148887048
-Index size: 2.8 GB
-```
-
-##### Trial 4 (-11,891,562 Kmers)
-
-```ini
-[kProcessor]
-ksize = 31
-Q = 30
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
-
-```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
-```
-
-Stats
-
-```txt
-Indexing time : 0:04:06.227647
-Memory: 7.5 GB
-Number of kmers: 160779094
-Index size: 5.4 GB
-```
-
-##### Trial 5 (-5,946,610 Kmers) **The maximum I can afford**
-
-```ini
-[kProcessor]
-ksize = 31
-Q = 31
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
-
-```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
-```
-
-Stats
-
-```txt
-Indexing time : 0:04:03.444587
-Memory: 12.5 GB
-Number of kmers: 166724046
-Index size: 10.5 GB
-```
-
-### **PHMAP Surprise**
-
-Inline-style:
-<img src="https://www.pngfind.com/pngs/m/9-94551_graphic-ballon-vector-surprise-box-sorpresa-comic-png.png" alt="drawing" width="200"/>
-
-#### Trial 1 (No Lost Kmers!!!)
-
-```ini
-[kProcessor]
-ksize = 31
-hashing_mode = 1
-kmers_mode = 1
-chunk_size = 100000
-```
-
-```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
-```
-
-Stats
-
-```txt
-Indexing time : 0:02:49.715953
-Memory: 9 GB
-Number of kmers: 172670656
-Index size: 4.3 GB
-Index loading time is : 2 secs!
-```
-
-#### Trial 2 (Murmur Hashing)
-
-```ini
-[kProcessor]
-ksize = 31
-hashing_mode = 0
-kmers_mode = 1
-chunk_size = 100000
-```
-
-```bash
-python collectiveComps_indexing.py data/cDBG_SRR11015356_k31.unitigs.fa
-```
-
-Stats
-
-```txt
-Indexing time : 0:02:35.805547
-Memory: 4.3 GB
-Number of kmers: 29,720,973
-Index size: 1.1 GB
-```
-
----
----
-
-### Query 1
-
-> Querying 10K sequences first and last kmers took about 0.5 Sec.
+#### 3.4 Perform second query
 
