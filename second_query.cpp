@@ -188,6 +188,10 @@ int main() {
 
     string db_file;
     auto *SQL = new SQLiteManager(sqlite_db);
+    if (!SQL->check_reads_table()) {
+        cerr << "couldn't find the `reads` table." << endl;
+        return 1;
+    }
 
     // Make it faster
     string _sqlite_sync = "PRAGMA synchronous = OFF;";
@@ -270,16 +274,25 @@ int main() {
             _it_r1 == R_pairs_count[1].end() ? read1_comp = 0 : read1_comp = _it_r1->second;
             _it_r2 == R_pairs_count[2].end() ? read2_comp = 0 : read2_comp = _it_r2->second;
 
-            string _s_fragement = to_string(fragementID);
-            string line = "R" + _s_fragement + ".1";
-            line.append("\t");
-            line.append(to_string(read1_comp));
-            line.append("\t");
-            line.append("R" + _s_fragement + ".2");
-            line.append("\t");
-            line.append(to_string(read2_comp));
-            line.append("\n");
-            counts_writer[collectiveCompID]->write(line);
+            if (read1_comp && read2_comp) {
+                if (read1_comp != read2_comp) {
+                    string _s_fragement = to_string(fragementID);
+                    string line = "R" + _s_fragement + ".1";
+                    line.append("\t");
+                    line.append(to_string(read1_comp));
+                    line.append("\t");
+                    line.append("R" + _s_fragement + ".2");
+                    line.append("\t");
+                    line.append(to_string(read2_comp));
+                    line.append("\n");
+                    counts_writer[collectiveCompID]->write(line);
+                } else {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+
 
         }
 

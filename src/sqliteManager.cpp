@@ -11,9 +11,7 @@ int SQLiteManager::callback(void *NotUsed, int argc, char **argv, char **azColNa
     return 0;
 }
 
-SQLiteManager::SQLiteManager(string db_file) {
-
-    this->db = sqlite3pp::database (db_file.c_str());
+void SQLiteManager::create_reads_table() {
 
     string _sqlite_checkTable = "SELECT ID FROM reads LIMIT 1";
     this->rc = sqlite3_exec(this->db.db_, _sqlite_checkTable.c_str(), this->callback, 0, &this->zErrMsg);
@@ -66,6 +64,16 @@ SQLiteManager::SQLiteManager(string db_file) {
 
 }
 
+bool SQLiteManager::check_reads_table() {
+    string _sqlite_checkTable = "SELECT ID FROM reads LIMIT 1";
+    this->rc = sqlite3_exec(this->db.db_, _sqlite_checkTable.c_str(), this->callback, nullptr, &this->zErrMsg);
+    return this->rc == 0;
+}
+
+SQLiteManager::SQLiteManager(const string& db_file) {
+    this->db = sqlite3pp::database(db_file.c_str());
+}
+
 void SQLiteManager::close() {
     sqlite3_close(this->db.db_);
 }
@@ -73,9 +81,10 @@ void SQLiteManager::close() {
 void SQLiteManager::insert_PE(string &R1, string &R2, int &collectiveComp1, int &collectiveComp2) {
 
     const string _sqlite_insert = "INSERT INTO reads"
-                            "(PE_seq1, PE_seq2, seq1_collective_component, seq2_collective_component, seq1_original_component, seq2_original_component)"
-                            "VALUES"
-                            "('"+ R1 +"', '"+ R2 +"', " + to_string(collectiveComp1) +", "+ to_string(collectiveComp2) +", 0, 0);";
+                                  "(PE_seq1, PE_seq2, seq1_collective_component, seq2_collective_component, seq1_original_component, seq2_original_component)"
+                                  "VALUES"
+                                  "('" + R1 + "', '" + R2 + "', " + to_string(collectiveComp1) + ", " +
+                                  to_string(collectiveComp2) + ", 0, 0);";
 
     this->rc = sqlite3_exec(this->db.db_, _sqlite_insert.c_str(), this->callback, 0, &this->zErrMsg);
 

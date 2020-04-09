@@ -20,7 +20,9 @@ public:
 
 public:
     sqlite3pp::database db;
-    SQLiteManager(string db_file);
+    SQLiteManager(const string& db_file);
+    void create_reads_table();
+    bool check_reads_table();
     void insert_PE(string & R1, string & R2, int & collectiveComp1, int & collectiveComp2);
     void close();
 
