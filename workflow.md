@@ -47,6 +47,8 @@ python scripts/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.
 
 <<STATS
 
+Top 30 components: [7725860, 2559, 1966, 1832, 1603, 1523, 1522, 1489, 1362, 1316, 1278, 1268, 1247, 1229, 1194, 1180, 1173, 1171, 1129, 1064, 1046, 999, 996, 995, 961, 924, 922, 909, 859, 856]
+
 (Mystats)
 Number of original connected components : 1,032,950
 
@@ -66,8 +68,11 @@ STATS
 
 ```bash
 python kExplorer/graph_analysis/1-dislinkage.py cDBG_SRR11015356_k31.unitigs.gfa 31
+python scripts/gfa_to_connected_components.py dislinked_cDBG_SRR11015356_k31.unitigs.gfa
 
 <<STATS
+
+Top 30 components: [7432320, 2739, 2553, 1966, 1877, 1832, 1807, 1660, 1603, 1554, 1527, 1523, 1522, 1516, 1489, 1454, 1362, 1316, 1278, 1268, 1247, 1245, 1229, 1204, 1194, 1190, 1180, 1174, 1173, 1171]
 
 (Mystats)
 Number of original connected components : 1,201,346
@@ -79,39 +84,6 @@ Total length (bp):                447026231
 Connected components:             1,201,346
 Largest component (bp):           329,952,460 (diff: 13,609,408 bp)
 Shortest node (bp):               31
-
-STATS
-
-```
-
-##### 2.4 Getting the largest component unitigs number
-
-**longestRow.py**
-```python
-import sys
-
-with open(sys.argv[1]) as csvReader:
-    longest_line = 0
-    line_len = 0
-    i = 0
-    for line in csvReader:
-        i+=1
-        _len = len(line.strip().split(','))
-        if _len > line_len:
-           line_len = _len
-           longest_line = i
-
-    print(f"Longest line: {longest_line} with number of components = {line_len}")
-```
-
-```bash
-python longestRow.py dislinked_cDBG_SRR11015356_k31.unitigs.gfa.components.csv
-python longestRow.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv
-
-<<STATS
-
-BEFORE = Longest Component: 2 with number of Unitigs = 7725861
-AFTER =  Longest Component: 1 with number of Unitigs = 7432321
 
 STATS
 
