@@ -55,12 +55,68 @@ Node count:                       9,145,177
 Edge count:                       11,701,516
 Total length (bp):                447026231
 Connected components:             1,032,950 SAME AS MINE
-Largest component (bp):           343561868
+Largest component (bp):           343,561,868
 Shortest node (bp):               31
 
 STATS
 
 ```
+
+#### 2.3 Trial to performe edges dislinkage
+
+```bash
+python kExplorer/graph_analysis/1-dislinkage.py cDBG_SRR11015356_k31.unitigs.gfa 31
+
+<<STATS
+
+(Mystats)
+Number of original connected components : 1,201,346
+
+(BandageStats)
+Node count:                       9,145,177
+Edge count:                       11,411,972
+Total length (bp):                447026231
+Connected components:             1,201,346
+Largest component (bp):           329,952,460 (diff: 13,609,408 bp)
+Shortest node (bp):               31
+
+STATS
+
+```
+
+##### 2.4 Getting the largest component unitigs number
+
+**longestRow.py**
+```python
+import sys
+
+with open(sys.argv[1]) as csvReader:
+    longest_line = 0
+    line_len = 0
+    i = 0
+    for line in csvReader:
+        i+=1
+        _len = len(line.strip().split(','))
+        if _len > line_len:
+           line_len = _len
+           longest_line = i
+
+    print(f"Longest line: {longest_line} with number of components = {line_len}")
+```
+
+```bash
+python longestRow.py dislinked_cDBG_SRR11015356_k31.unitigs.gfa.components.csv
+python longestRow.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv
+
+<<STATS
+
+BEFORE = Longest Component: 2 with number of Unitigs = 7725861
+AFTER =  Longest Component: 1 with number of Unitigs = 7432321
+
+STATS
+
+```
+
 
 #### 2.3 Add the collective components column (50k) collective component
 
@@ -121,7 +177,7 @@ This step creates a sqlite DB with columns as following
 - R2 Collective component ID
 
 ```bash
-./build/query_1
+./build/query_1 # Optional: # --db /query_1.db
 
 <<RESULT
 Paired End File: 1 | mapped_reads  %97.3955
@@ -147,5 +203,20 @@ RESULT
 - **Mem:** 6.56 GB
 - **DB FIle Size:** 24 GB
 
+
+##### Sqlite DB insights **[Debugging purposes]**
+
+```sqlite
+select seq1_collective_component, count(seq1_collective_component) from reads group by seq1_collective_component;
+select seq2_collective_component, count(seq2_collective_component) from reads group by seq2_collective_component;
+```
+
+
 #### 3.4 Perform second query
 
+```bash
+./query_2 # Optional: # --db query_1.db --out-dir fasta_out
+```
+
+- **Time:** 1:50:07
+- **Mem:** 5.01 GB
