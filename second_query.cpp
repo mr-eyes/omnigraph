@@ -247,7 +247,7 @@ int main(int argc, char **argv) {
 
                 string constructedRead = get<0>(read_result);
                 bool mapped_flag = get<1>(read_result);
-                int seq_original_component = get<2>(read_result);
+                int seq_original_component = get<3>(read_result);
 
                 // Header (R_ID|CompID)
                 string fasta_read = ">" + to_string(ROW_ID) + "|" + to_string(seq_original_component) + "\n";

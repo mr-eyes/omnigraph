@@ -84,11 +84,11 @@ int main(int argc, char **argv) {
 
             string read_1_constructedRead = get<0>(read_1_result);
             bool read_1_mapped_flag = get<1>(read_1_result);
-            int read_1_collectiveComponent = get<2>(read_1_result);
+            int read_1_collectiveComponent = get<3>(read_1_result);
 
             string read_2_constructedRead = get<0>(read_2_result);
             bool read_2_mapped_flag = get<1>(read_2_result);
-            int read_2_collectiveComponent = get<2>(read_2_result);
+            int read_2_collectiveComponent = get<3>(read_2_result);
 
             SQL->insert_PE(read_1_constructedRead, read_2_constructedRead, read_1_collectiveComponent,
                            read_2_collectiveComponent);
