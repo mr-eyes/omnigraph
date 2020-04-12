@@ -8,6 +8,9 @@ Run:
 python unitigs_dislinkage.py <GFA_path>
 """
 
+# [TODO] IF the there is no remaining edges in the header and length of unitig < 200, remove the unitig
+# [TODO] IF the length < 200 & first and last kmer low complexity (remove it)
+
 import os
 import subprocess
 from tqdm import tqdm
@@ -19,7 +22,7 @@ class Dust:
 
     def __init__(self, kSize):
         self.kSize = kSize
-        self.max_dust = self.maxDustWindow(read=str("ACT" * kSize)[0:kSize], window_size=kSize, min_window_size=kSize)
+        self.max_dust = self.maxDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=kSize, min_window_size=kSize)
 
     def maxDustWindow(self, read, window_size, min_window_size):
         max_score = 0.0
