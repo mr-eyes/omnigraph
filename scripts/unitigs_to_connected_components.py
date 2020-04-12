@@ -16,6 +16,7 @@ python unitigs_to_connected_components.py <unitigs_path>
 import subprocess
 from tqdm import tqdm
 from collections import defaultdict
+from collections import Counter
 import sys
 import os
 
@@ -47,6 +48,8 @@ print("Parsing Fasta file ...")
 source = []
 target = []
 
+unitig_to_size = dict()
+
 
 def get_nodeID(link):
     return int(link[4:-2])
@@ -54,9 +57,10 @@ def get_nodeID(link):
 
 with open(unitigs_path, 'r') as unitigsReader:
     for line in tqdm(unitigsReader, total=lines_number):
-        seq = next(unitigsReader).strip()
+        seq_len = len(next(unitigsReader).strip())
         header = line.strip().split()
         unitig_id = int(header[0][1:])
+        unitig_to_size[unitig_id] = seq_len
         links = list(map(get_nodeID, header[4:]))
         source.append(unitig_id)
         target.append(unitig_id)
@@ -77,21 +81,38 @@ for x in leaders:
 
 print(f"number of components: {len(groups)}")
 
-component_id = 1
-
 output_file = os.path.basename(unitigs_path) + ".components.csv"
 print(f"Dumping to {output_file}")
 
-report = dict()
+final_components = dict()
+components_length = dict()
 
 with open(output_file, 'w') as comp:
-    for k, v in groups.items():
-        report[k] = len(v)
+    for component_id, (k, v) in enumerate(groups.items(), start=1):
+        # Save component with corrected component ID
+        final_components[component_id] = v
+
+        # Save component length
+        components_length[component_id] = len(v)
+
+        # Save component to CSV
         comp.write(f"{component_id}" + ',' + ",".join(list(map(str, v))) + '\n')
-        component_id += 1
 
-values = sorted(list(report.values()), reverse=True)
+groups.clear()
 
-print(f"Top 30 components: {values[:30]}")
+top_30_ids = Counter(components_length).most_common(30)
+components_size = list()
+for comp in top_30_ids:
+    compID = comp[0]
+    compNodesSize = comp[1]
+    _size_bp = 0
+    for unitigID in final_components[compID]:
+        _size_bp += unitig_to_size[unitigID]
+
+    components_size.append((compID, compNodesSize, _size_bp))
+
+# Finding 3 highest values
+high = k
+print(f"Top 30 components: (ID, nodesCount, length_BP)\n{components_size}")
 
 print("Done", file=sys.stderr)
