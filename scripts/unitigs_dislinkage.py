@@ -65,6 +65,8 @@ if len(sys.argv) < 3:
 
 unitigs_file = sys.argv[1]
 
+LENGTH_THRESHOLD = 151
+
 if not os.path.exists(unitigs_file):
     sys.exit(f"File {unitigs_file} does not exist.")
 
@@ -78,7 +80,7 @@ no_seqs = int(subprocess.getoutput('wc -l ' + unitigs_file).split()[0]) // 2
 
 DUST = Dust(kSize)
 
-output_file = "dislinked_" + os.path.basename(unitigs_file)
+output_file = "filtered_dislinked_" + os.path.basename(unitigs_file)
 
 print(f"Parsing {unitigs_file} ...")
 
@@ -95,6 +97,10 @@ with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigs
 
         first_k = bool(DUST.calculateDustScore(seq[:DUST.kSize]) > DUST.max_dust)
         last_k = bool(DUST.calculateDustScore(seq[-DUST.kSize:]) > DUST.max_dust)
+
+        if first_k and last_k:
+            if len(seq) <= LENGTH_THRESHOLD:
+                continue
 
         if first_k:
             should_be_removed.append("L:+")
