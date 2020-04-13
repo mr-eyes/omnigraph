@@ -6,7 +6,7 @@
 #SBATCH --time=10:00:00
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 32
+#SBATCH -c 10
 #SBATCH --mem=80gb
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
@@ -48,7 +48,7 @@ cp /home/mhussien/omnigraph/data/cDBG75/$REF_FASTA ./
 
 # Set Global Variables
 SCRIPTS=/home/mhussien/omnigraph/scripts
-THREADS=32
+THREADS=10
 OUT_PREFIX=cDBG75
 MAX_RAM_MB=64000
 MAX_RAM_GB=64
@@ -57,9 +57,9 @@ K_SIZE=75
 ############################## (1) START CDHIT ####################################
 
 echo "CD-HIT on %97 ..."
-WORD_SIZE=9
+WORD_SIZE=11
 SIM=0.97
-cd-hit-est -i ${REF_FASTA} -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB}  &> log_cdhit_${SIM}_${OUT_PREFIX}.log
+cd-hit-est -i ${REF_FASTA} -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB}  #&> log_cdhit_${SIM}_${OUT_PREFIX}.log
 
 ################################ END CDHIT ######################################
 
@@ -80,12 +80,12 @@ done
 for SIM in 0.97
 do
     echo "Constructing cDBG of representatives at %${SIM}"
-    bcalm -kmer-size ${K_SIZE} -nb-cores $THREADS -max-memory ${MAX_RAM} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
+    bcalm -kmer-size ${K_SIZE} -nb-cores $THREADS -max-memory ${MAX_RAM} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa # &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
     echo "Converting reps_unitigs_${OUT_PREFIX}_${SIM}.fa to GFA"
     python ${SCRIPTS}/unitigsToGFA.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa cDBG2_${SIM}_${OUT_PREFIX}.unitigs.gfa ${K_SIZE} --single-directed
     echo "Getting cDBG Stats for cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa"
-    Bandage info cDBG2_${SIM}_${OUT_PREFIX}.unitigs.gfa &> log_Bandage_cDBG2_${SIM}_${OUT_PREFIX}.gfa.log
-    python ${SCRIPTS}/unitigs_to_connected_components.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa &> log_script_connectedComponents_cDBG2_${SIM}_${OUT_PREFIX}.gfa.log
+    Bandage info cDBG2_${SIM}_${OUT_PREFIX}.unitigs.gfa # &> log_Bandage_cDBG2_${SIM}_${OUT_PREFIX}.gfa.log
+    python ${SCRIPTS}/unitigs_to_connected_components.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa # &> log_script_connectedComponents_cDBG2_${SIM}_${OUT_PREFIX}.gfa.log
     python ${SCRIPTS}/unitigs_edges_histogram.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa.components.csv
 done
 ##################### DONE EXTRACTION Representatives ##################
