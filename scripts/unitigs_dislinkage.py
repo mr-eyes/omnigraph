@@ -15,6 +15,7 @@ import os
 import subprocess
 from tqdm import tqdm
 import sys
+from statistics import median
 
 
 class Dust:
@@ -22,7 +23,8 @@ class Dust:
 
     def __init__(self, kSize):
         self.kSize = kSize
-        self.max_dust = self.maxDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=kSize, min_window_size=kSize)
+        #self.max_dust = self.maxDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=kSize, min_window_size=kSize)
+        self.max_dust = self.medianDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=21, min_window_size=21)
 
     def maxDustWindow(self, read, window_size, min_window_size):
         max_score = 0.0
@@ -39,6 +41,21 @@ class Dust:
                     max_score = s
 
         return max_score
+
+    def medianDustWindow(self, read, window_size = 21, min_window_size = 21):
+        max_scores = []
+        r_l = len(read)
+        for i in range(0, r_l - 1):
+            r = r_l - i
+            if r < window_size:
+                w = r
+            else:
+                w = window_size
+            if w >= min_window_size:
+                s = self.calculateDustScore(read[i:i + w])
+                max_scores.append(s)
+
+        return median(max_scores)
 
     def calculateDustScore(self, read):
         dec = {}
@@ -95,8 +112,8 @@ with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigs
 
         should_be_removed = list()
 
-        first_k = bool(DUST.calculateDustScore(seq[:DUST.kSize]) > DUST.max_dust)
-        last_k = bool(DUST.calculateDustScore(seq[-DUST.kSize:]) > DUST.max_dust)
+        first_k = bool(DUST.medianDustWindow(seq[:DUST.kSize]) > DUST.max_dust)
+        last_k = bool(DUST.medianDustWindow(seq[-DUST.kSize:]) > DUST.max_dust)
 
         if first_k and last_k:
             if len(seq) <= LENGTH_THRESHOLD:
