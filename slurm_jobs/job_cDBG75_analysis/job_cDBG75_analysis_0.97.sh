@@ -80,7 +80,7 @@ done
 for SIM in 0.97
 do
     echo "Constructing cDBG of representatives at %${SIM}"
-    bcalm -kmer-size ${K_SIZE} -nb-cores $THREADS -max-memory ${MAX_RAM} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa # &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
+    bcalm -kmer-size ${K_SIZE} -nb-cores ${THREADS} -max-memory ${MAX_RAM_MB} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa # &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
     echo "Converting reps_unitigs_${OUT_PREFIX}_${SIM}.fa to GFA"
     python ${SCRIPTS}/unitigsToGFA.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa cDBG2_${SIM}_${OUT_PREFIX}.unitigs.gfa ${K_SIZE} --single-directed
     echo "Getting cDBG Stats for cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa"
