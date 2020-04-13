@@ -128,4 +128,4 @@ with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigs
             if link[:3] not in should_be_removed:
                 new_header += " " + link
 
-        unitigsWriter.write(f"{new_header}\n{seq}")
+        unitigsWriter.write(f"{new_header}\n{seq}\n")
