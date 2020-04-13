@@ -87,7 +87,7 @@ print(f"Parsing {unitigs_file} ...")
 with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigsWriter:
     for line in tqdm(unitigsReader, total=no_seqs):
         line = line.strip()
-        seq = next(unitigsReader)
+        seq = next(unitigsReader).strip()
         header = line.strip().split()
 
         new_header = " ".join(header[:4]) + "  "
@@ -103,9 +103,9 @@ with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigs
                 continue
 
         if first_k:
-            should_be_removed.append("L:+")
-        if last_k:
             should_be_removed.append("L:-")
+        if last_k:
+            should_be_removed.append("L:+")
 
         for link in all_links:
             if link[:3] not in should_be_removed:
