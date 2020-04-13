@@ -2,7 +2,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
 #SBATCH -p bmh
-#SBATCH -J firstQuery
+#SBATCH -J secondQuery
 #SBATCH --time=15:00:00
 #SBATCH -N 1
 #SBATCH -n 1

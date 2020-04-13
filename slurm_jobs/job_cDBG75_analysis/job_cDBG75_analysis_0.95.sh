@@ -2,7 +2,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
 #SBATCH -p bmh
-#SBATCH -J cDBG75_Analysis
+#SBATCH -J cDBG75_0.95_Analysis
 #SBATCH --time=10:00:00
 #SBATCH -N 1
 #SBATCH -n 1
@@ -40,7 +40,7 @@ trap cleanup EXIT
 
 cd "$MYTMP"
 
-REF_FASTA=cDBG_SRR11015356_k75.unitigs.fa
+REF_FASTA=dislinked_cDBG_SRR11015356_k75.unitigs.fa
 
 # Copy required files from the original directory to the scratch directory
 cp /home/mhussien/omnigraph/data/cDBG75/$REF_FASTA ./
@@ -55,29 +55,18 @@ MAX_RAM_GB=64
 K_SIZE=75
 
 ############################## (1) START CDHIT ####################################
-#              # Run CDHIT with similarities %95, %97, %99
-
 
 echo "CD-HIT on %95 ..."
 WORD_SIZE=9
 SIM=0.95
-cd-hit-est -i cDBG_${REF_FASTA}.unitigs.fa -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB} &> log_cdhit_${SIM}_${OUT_PREFIX}.log
-
-WORD_SIZE=11
-echo "CD-HIT on %97 ..."
-SIM=0.97
-cd-hit-est -i cDBG_${REF_FASTA}.unitigs.fa -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB} &> log_cdhit_${SIM}_${OUT_PREFIX}.log
-git ad
-echo "CD-HIT on %97 ..."
-SIM=0.99
-cd-hit-est -i cDBG_${REF_FASTA}.unitigs.fa -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB} &> log_cdhit_${SIM}_${OUT_PREFIX}.log
+cd-hit-est -i ${REF_FASTA} -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB}  &> log_cdhit_${SIM}_${OUT_PREFIX}.log
 
 ################################ END CDHIT ######################################
 
 
 ##################### (2) EXTRACTING Representatives from REF_FASTA ##################
 
-for SIM in 0.95 0.95 0.97
+for SIM in 0.95
 do
     echo "Extracting representatives from clusters at %${SIM}"
     cat clusters_${SIM}_${OUT_PREFIX}.clstr | grep "\*" | awk -F"[>.]" '{print ">"$2}' | grep -Fwf - -A1 <(seqkit seq -w 0 ${REF_FASTA}) | grep -v "^\-\-" > reps_unitigs_${OUT_PREFIX}_${SIM}.fa
@@ -88,7 +77,7 @@ done
 
 ############# (3) Constructing cDBG of the representative sequences ##################
 
-for SIM in 0.95 0.95 0.97
+for SIM in 0.95
 do
     echo "Constructing cDBG of representatives at %${SIM}"
     bcalm -kmer-size ${K_SIZE} -nb-cores $THREADS -max-memory ${MAX_RAM} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
