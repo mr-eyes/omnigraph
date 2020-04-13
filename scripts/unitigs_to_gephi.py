@@ -52,6 +52,20 @@ with open(unitigs_file, 'r') as unitigsReader:
             source[compID].append(unitig_id)
             target[compID].append(link)
 
+final_edges = set()
+nodes_length = len(source[focus_compID])
+
+print("Constructing edges list ...")
+
+for i in tqdm(range(nodes_length)):
+    source_node = source[focus_compID][i]
+    target_node = target[focus_compID][i]
+
+    if source_node > target_node:
+        final_edges.add((source_node, target_node))
+    else:
+        final_edges.add((target_node, source_node))
+
 output_file = ".".join(os.path.basename(unitigs_file).split(".")[:-1]) + "_gephi.csv"
 print(f"Writing gephi csv: {output_file}")
 with open(output_file, 'w') as gephiWriter:
@@ -59,5 +73,5 @@ with open(output_file, 'w') as gephiWriter:
 
     assert len(source[focus_compID]) == len(target[focus_compID])
 
-    for source_node, target_node in zip(source[focus_compID], target[focus_compID]):
+    for source_node, target_node in tqdm(final_edges):
         gephiWriter.write(f"{source_node},{target_node}\n")
