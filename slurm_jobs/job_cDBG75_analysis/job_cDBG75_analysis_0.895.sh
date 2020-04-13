@@ -56,9 +56,9 @@ K_SIZE=75
 
 ############################## (1) START CDHIT ####################################
 
-echo "CD-HIT on %99 ..."
+echo "CD-HIT on %985 ..."
 WORD_SIZE=11
-SIM=0.99
+SIM=0.985
 cd-hit-est -i ${REF_FASTA} -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PREFIX} -d 0 -T ${THREADS} -M ${MAX_RAM_MB}  # &> log_cdhit_${SIM}_${OUT_PREFIX}.log
 
 ################################ END CDHIT ######################################
@@ -66,7 +66,7 @@ cd-hit-est -i ${REF_FASTA} -n ${WORD_SIZE} -c ${SIM} -o clusters_${SIM}_${OUT_PR
 
 ##################### (2) EXTRACTING Representatives from REF_FASTA ##################
 
-for SIM in 0.99
+for SIM in 0.985
 do
     echo "Extracting representatives from clusters at %${SIM}"
     cat clusters_${SIM}_${OUT_PREFIX}.clstr | grep "\*" | awk -F"[>.]" '{print ">"$2}' | grep -Fwf - -A1 <(seqkit seq -w 0 ${REF_FASTA}) | grep -v "^\-\-" > reps_unitigs_${OUT_PREFIX}_${SIM}.fa
@@ -77,7 +77,7 @@ done
 
 ############# (3) Constructing cDBG of the representative sequences ##################
 
-for SIM in 0.99
+for SIM in 0.985
 do
     echo "Constructing cDBG of representatives at %${SIM}"
     bcalm -kmer-size ${K_SIZE} -nb-cores ${THREADS} -max-memory ${MAX_RAM_MB} -abundance-min 1 -out cDBG2_${SIM}_${OUT_PREFIX} -in reps_unitigs_${OUT_PREFIX}_${SIM}.fa # &> log_bcalm_cDBG_reps_unitigs_${OUT_PREFIX}_${SIM}
