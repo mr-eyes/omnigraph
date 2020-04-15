@@ -14,3 +14,5 @@ data/
 .ipynb_checkpoints/
 
 cmake-build-debug/
+
+idx_cDBG_SRR11015356_k31unitigs/
