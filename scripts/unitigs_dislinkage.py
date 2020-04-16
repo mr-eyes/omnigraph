@@ -89,7 +89,7 @@ if len(sys.argv) < 3:
 filter_mode = "mild"
 
 if len(sys.argv) == 4:
-    mode = sys.argv[3]
+    filter_mode = sys.argv[3]
 
 unitigs_file = sys.argv[1]
 
