@@ -10,26 +10,6 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 from tqdm import tqdm
 
-"""
-# TODO
-
-LN: print
-    - Frequency of unitigs with length == 75
-    - Sum of frequencies of unitigs length [76:80]
-    - Sum of frequencies of unitigs length [81:151]
-    - Sum of frequencies of unitigs length >151
-    - Maximum found length
-
-KM: print
-    - Frequency of unitigs with KM [1.0: <= 2.0]
-    - Frequency of unitigs with KM [> 2.0: <= 10.0]
-    - Frequency of unitigs with KM [> 10.0:<= 50.0]
-    - Frequency of unitigs with KM [> 50.0:<= 100.0]
-    - Frequency of unitigs with KM [> 100.0:<= 1000.0]
-    - Frequency of unitigs with KM [> 1000.0:<= 10000.0]
-    - Frequency of unitigs with KM [> 10000.0]
-"""
-
 
 class Stats:
     km_stats = dict()
@@ -40,7 +20,7 @@ class Stats:
                  "81:151": "Sum of frequencies of unitigs length [81:151]",
                  ">151": "Sum of frequencies of unitigs length >151"}
 
-    km_prints = {"1:2": "Frequency of unitigs with KM [1.0: <= 2.0]",
+    km_prints = {"0:2": "Frequency of unitigs with KM [1.0: <= 2.0]",
                  "2:10": "Frequency of unitigs with KM [> 2.0: <= 10.0]",
                  "10:50": "Frequency of unitigs with KM [> 10.0:<= 50.0]",
                  "50:100": "Frequency of unitigs with KM [> 50.0:<= 100.0]",
@@ -50,7 +30,7 @@ class Stats:
 
     def __init__(self, number_of_components):
         self.ln_keys = ["==75", "76:80", "81:151", ">151"]
-        self.km_keys = ["1:2", "2:10", "10:50", "50:100", "100:1000", "1000:10000", ">10000"]
+        self.km_keys = ["0:2", "2:10", "10:50", "50:100", "100:1000", "1000:10000", ">10000"]
         for _compID in range(1, number_of_components + 1, 1):
             self.number_of_components = number_of_components
             self.km_stats[_compID] = dict()
@@ -62,30 +42,27 @@ class Stats:
                 self.ln_stats[_compID][k] = 0
 
     def stats_insert_km(self, _compID, km):
-        #        print(f"Inserting {ln} in comp: {_compID}")
-        #        print(f"type: {type(_compID)}")
-
-        if km > self.ln_max[compID]:
-            self.ln_max[_compID] = km
+        km = float(km)
 
         if km > 10000:
             self.km_stats[_compID][">10000"] += 1
-        elif 1000 > km <= 10000:
+        elif 1000 < km <= 10000:
             self.km_stats[_compID]["1000:10000"] += 1
-        elif 100 > km <= 1000:
+        elif 100 < km <= 1000:
             self.km_stats[_compID]["100:1000"] += 1
-        elif 50 > km <= 100:
+        elif 50 < km <= 100:
             self.km_stats[_compID]["50:100"] += 1
-        elif 10 > km <= 50:
+        elif 10 < km <= 50:
             self.km_stats[_compID]["10:50"] += 1
-        elif 2 > km <= 10:
+        elif 2 < km <= 10:
             self.km_stats[_compID]["2:10"] += 1
-        elif 0 > km <= 2:
-            self.km_stats[_compID]["1:2"] += 1
-
-    #        print(f"Done : {str(self.ln_stats[_compID])}")
+        elif 0 < km <= 2:
+            self.km_stats[_compID]["0:2"] += 1
 
     def stats_insert_ln(self, _compID, ln):
+
+        if ln > self.ln_max[compID]:
+            self.ln_max[_compID] = ln
 
         if ln > 151:
             self.ln_stats[_compID][">151"] += 1
@@ -113,7 +90,6 @@ class Stats:
         tmp_km_stats = dict()
         tmp_ln_stats = dict()
         max_ln = max(list(self.ln_max.values()))
-
 
         for k in self.km_keys:
             tmp_km_stats[k] = 0
@@ -186,7 +162,8 @@ with open(unitigs_file, 'r') as unitigsReader:
         unitig_id = int(header[0][1:])
         compID = unitig_to_component[unitig_id]
 
-        _ln = float(header[1].split(":")[-1])
+        _ln = int(header[1].split(":")[-1])
+        assert str(_ln) in header[1]
         LN[compID].append(_ln)
         stats.stats_insert_ln(compID, _ln)
 
@@ -196,7 +173,6 @@ with open(unitigs_file, 'r') as unitigsReader:
         _km = float(header[3].split(":")[-1])
         KM[compID].append(_km)
         stats.stats_insert_km(compID, _km)
-
 
 stats.get_stats_all_comps()
 print("\n ------------------------------ \n")
