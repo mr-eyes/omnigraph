@@ -2,12 +2,12 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
 #SBATCH -p bmh
-#SBATCH -J cDBG75_0.985_Analysis_filtered_dislinkage
+#SBATCH -J cDBG75_0.985_Analysis_aggressive_dislinkage
 #SBATCH --time=4:00:00
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 5
-#SBATCH --mem=25gb
+#SBATCH -c 16
+#SBATCH --mem=45gb
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
 
@@ -40,7 +40,7 @@ trap cleanup EXIT
 
 cd "$MYTMP"
 
-REF_FASTA=filtered_dislinked_cDBG_SRR11015356_k75.unitigs.fa
+REF_FASTA=aggressive_dislinked_cDBG_SRR11015356_k75.unitigs.fa
 
 # Copy required files from the original directory to the scratch directory
 cp /home/mhussien/omnigraph/data/cDBG75/$REF_FASTA ./
@@ -48,10 +48,10 @@ cp /home/mhussien/omnigraph/data/cDBG75/$REF_FASTA ./
 
 # Set Global Variables
 SCRIPTS=/home/mhussien/omnigraph/scripts
-THREADS=5
+THREADS=16
 OUT_PREFIX=cDBG75
-MAX_RAM_MB=25000
-MAX_RAM_GB=25
+MAX_RAM_MB=45000
+MAX_RAM_GB=45
 K_SIZE=75
 
 ############################## (1) START CDHIT ####################################

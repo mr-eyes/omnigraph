@@ -2,11 +2,11 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
 #SBATCH -p bmh
-#SBATCH -J cDBG75_0.95_Analysis_mild_dislinkage
+#SBATCH -J cDBG75_0.95_Analysis_filtered_dislinkage
 #SBATCH --time=4:00:00
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 10
+#SBATCH -c 12
 #SBATCH --mem=80gb
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
@@ -40,7 +40,7 @@ trap cleanup EXIT
 
 cd "$MYTMP"
 
-REF_FASTA=filtered_dislinked_cDBG_SRR11015356_k75.unitigs.fa
+REF_FASTA=mild_dislinked_cDBG_SRR11015356_k75.unitigs.fa
 
 # Copy required files from the original directory to the scratch directory
 cp /home/mhussien/omnigraph/data/cDBG75/$REF_FASTA ./
