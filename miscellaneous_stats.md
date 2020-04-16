@@ -76,7 +76,29 @@
     ```text
     Top 30 components: (ID, nodesCount, length_BP)
     [(8, 4587865, 415963910), (561, 22282, 1992741), (3223, 19301, 1760901), (403, 17744, 1567633), (4879, 13949, 1289456), (6489, 13015, 1122490), (12584, 12570, 1100743), (67, 12339, 1142333), (26517, 11981, 1034014), (9593, 11532, 1066448), (7951, 11450, 1096283), (4633, 11139, 1003534), (14376, 11121, 960225), (2242, 10537, 953723), (8574, 9852, 864402), (5896, 9649, 816595), (3433, 9408, 827137), (14233, 9231, 808184), (6364, 9207, 788958), (3384, 9081, 806285), (22788, 9012, 770867), (6747, 8815, 800158), (7962, 8731, 765955), (24161, 8691, 773513), (6940, 8570, 752348), (26956, 8542, 754974), (21245, 8408, 723026), (4662, 8084, 697516), (15078, 8015, 705604), (6750, 7900, 692412)]
+    ```
 
+- Bandage info 
+    ```
+    Node count:                       11672056
+    Edge count:                       0
+    Smallest edge overlap (bp):       0
+    Largest edge overlap (bp):        0
+    Total length (bp):                1121294392
+    Total length no overlaps (bp):    1121294392
+    Dead ends:                        23344112
+    Percentage dead ends:             100%
+    Connected components:             11672056
+    Largest component (bp):           1683
+    Total length orphaned nodes (bp): 1683
+    N50 (bp):                         88
+    Shortest node (bp):               75
+    Lower quartile node (bp):         75
+    Median node (bp):                 81
+    Upper quartile node (bp):         103
+    Longest node (bp):                1683
+    Median depth:                     1
+    Estimated sequence length (bp):   1121294392
     ```
 
 ### 2.2 Edges Connectivity | agg_dis_cDBG75
@@ -84,8 +106,8 @@
     ```tsv
     compID	(-4, 0)	(-4, 1)	(-4, 2)	(-4, 3)	(-4, 4)	(-3, 0)	(-3, 1)	(-3, 2)	(-3, 3)	(-3, 4)	(-2, 0)	(-2, 1)	(-2, 2)	(-2, 3)	(-2, 4)	(-1, 0)	(-1, 1)	(-1, 2)	(-1, 3)	(-1, 4)	(0, 0)	(0, 1)	(0, 2)	(0, 3)	(0, 4)
     8	79570	39152	67554	35654	80006	122279	63174	78808	45165	40031	222248	389976	325093	86102	78670	813283	329030	397594	74480	49209	0	742039	213781	126685	88282
-
     ```
+  
 ### 2.3 Kmers metadata histogram | agg_dis_cDBG75
 - Unitigs metadata histogram:
     - [KM (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/aggressive_dislinked/aggressive_dislinked_cDBG_SRR11015356_k75.unitigsKM_yLog_histo.html)
@@ -111,6 +133,28 @@
     Top 30 components: (ID, nodesCount, length_BP)
     [(8, 4949770, 448281180), (556, 22477, 2008781), (3194, 19309, 1761536), (4833, 14135, 1305499), (6219, 13785, 1187100), (66, 12354, 1143652), (26247, 11981, 1034014), (9500, 11535, 1066741), (7867, 11489, 1099996), (14235, 11121, 960225), (2227, 10812, 979568), (8486, 9866, 865500), (4619, 9667, 832990), (5840, 9649, 816595), (3404, 9408, 827137), (6303, 9257, 795484), (14093, 9233, 808414), (3355, 9090, 807168), (22553, 9076, 776111), (6684, 8815, 800158), (23915, 8784, 781078), (6873, 8653, 759470), (26680, 8623, 762120), (21024, 8408, 723026), (15850, 7639, 676399), (2019, 7550, 681242), (11182, 7423, 708792), (19129, 7193, 625471), (2374, 7175, 707541), (22195, 7169, 616647)]
 
+    ```
+- Bandage info 
+    ```
+    Node count:                       11766538
+    Edge count:                       0
+    Smallest edge overlap (bp):       0
+    Largest edge overlap (bp):        0
+    Total length (bp):                1129128323
+    Total length no overlaps (bp):    1129128323
+    Dead ends:                        23533076
+    Percentage dead ends:             100%
+    Connected components:             11766538
+    Largest component (bp):           1683
+    Total length orphaned nodes (bp): 1683
+    N50 (bp):                         88
+    Shortest node (bp):               75
+    Lower quartile node (bp):         75
+    Median node (bp):                 81
+    Upper quartile node (bp):         103
+    Longest node (bp):                1683
+    Median depth:                     1
+    Estimated sequence length (bp):   1129128323
     ```
 
 ### 3.2 Edges Connectivity  | mild_dis_cDBG75
