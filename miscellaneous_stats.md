@@ -226,7 +226,44 @@
 
 ### 4.3 CDHIT @ 98.5%
 
-#### 4.3.1 Components stats  | reduced_98.5_mild_dis_cDBG75
+#### 4.3.1 Representitives Files
+
+```tsv
+file                          format  type   num_seqs      sum_len  min_len  avg_len  max_len
+reps_unitigs_cDBG75_0.985.fa  FASTA   DNA   5,939,098  650,190,787       75    109.5    1,683
+```
+
+- Number of nodes: 4839097
+- Number of connected components: 4487423
+- Largest component number of nodes: 41
+- Largest component length (bp): 9393
+- Top 30 components: 
+- Bandage stats
+    ```
+    Node count:                       5939098
+    Edge count:                       1432945
+    Smallest edge overlap (bp):       74
+    Largest edge overlap (bp):        74
+    Total length (bp):                650190787
+    Total length no overlaps (bp):    498109243
+    Dead ends:                        9197631
+    Percentage dead ends:             77.4329%
+    Connected components:             4512295
+    Largest component (bp):           12203
+    Total length orphaned nodes (bp): 12203
+    N50 (bp):                         109
+    Shortest node (bp):               75
+    Lower quartile node (bp):         80
+    Median node (bp):                 96
+    Upper quartile node (bp):         126
+    Longest node (bp):                1683
+    Median depth:                     0.878788
+    Estimated sequence length (bp):   1499022010
+    ```
+
+
+
+#### 4.3.2 Components stats  | reduced_98.5_mild_dis_cDBG75
 
 - Number of nodes: 4839097
 - Number of connected components: 4487423
@@ -237,9 +274,67 @@
     Top 30 components: (ID, nodesCount, length_BP)
     (26514, 44, 8794), (757160, 42, 6177), (497267, 41, 9393), (825327, 41, 7221), (136267, 40, 5723), (167375, 38, 4774), (314755, 37, 9169), (183997, 36, 6117), (208319, 36, 6204), (26162, 35, 5520), (245302, 35, 5758), (554981, 35, 6442), (1150839, 35, 7190), (72906, 33, 4272), (111979, 33, 7215), (264507, 33, 4593), (1140537, 33, 6197), (26588, 32, 6022), (659062, 32, 4418), (11008, 31, 5034), (18254, 31, 5796), (79252, 31, 5782), (210260, 31, 5030), (38954, 30, 3901), (54671, 30, 4915), (156927, 30, 5715), (188533, 30, 3765), (66043, 29, 7015), (98281, 29, 3568), (114400, 29, 5104)
 
-#### 4.3.2 Edges Connectivity  | reduced_98.5_mild_dis_cDBG75
+#### 4.3.3 Edges Connectivity  | reduced_98.5_mild_dis_cDBG75
 - Edges connectivity
     ```tsv
     compID	(-4, 0)	(-4, 1)	(-4, 2)	(-4, 3)	(-4, 4)	(-3, 0)	(-3, 1)	(-3, 2)	(-3, 3)	(-3, 4)	(-2, 0)	(-2, 1)	(-2, 2)	(-2, 3)	(-2, 4)	(-1, 0)	(-1, 1)	(-1, 2)	(-1, 3)	(-1, 4)	(0, 0)	(0, 1)	(0, 2)	(0, 3)	(0, 4)
     497267	0	0	0	0	0	0	0	0	0	0	0	1	8	0	0	9	10	3	0	0	0	9	1	0	0
+    ```
+
+
+## 5. Aggressive cDBG_75 (Reduced)
+
+### 5.1 CDHIT @ 98.5%
+
+#### 5.1.1 Representitives Files
+
+```tsv
+file                          format  type   num_seqs      sum_len  min_len  avg_len  max_len
+reps_unitigs_cDBG75_0.985.fa  FASTA   DNA   5,903,962  647,039,807       75    109.6    1,683
+
+```
+
+- Number of nodes: 1980172
+- Number of connected components: 1848471
+- Largest component number of nodes: 29
+- Largest component length (bp): 8556
+- Bandage stats
+    ```
+    Node count:                       5903962
+    Edge count:                       1420478
+    Smallest edge overlap (bp):       74
+    Largest edge overlap (bp):        74
+    Total length (bp):                647039807
+    Total length no overlaps (bp):    496134493
+    Dead ends:                        9149635
+    Percentage dead ends:             77.4872%
+    Connected components:             4489444
+    Largest component (bp):           12203
+    Total length orphaned nodes (bp): 12203
+    N50 (bp):                         110
+    Shortest node (bp):               75
+    Lower quartile node (bp):         80
+    Median node (bp):                 96
+    Upper quartile node (bp):         127
+    Longest node (bp):                1683
+    Median depth:                     0.88189
+    Estimated sequence length (bp):   1494092397
+    ```
+
+#### 5.1.2 Components stats  | reduced_98.5_aggr_dis_cDBG75
+
+- Number of nodes: 1980172
+- Number of connected components: 1848471
+- Largest component number of nodes: 29
+- Largest component length (bp): 8556
+- Top 30 components: 
+    ```text
+    Top 30 components: (ID, nodesCount, length_BP)
+    (88589, 29, 6375), (105793, 29, 8556), (163616, 27, 7868), (22525, 25, 4536), (29591, 25, 4804), (109927, 25, 3950), (140239, 25, 3875), (252535, 25, 4860), (31324, 24, 6658), (41683, 24, 5582), (187571, 24, 4807), (33248, 23, 3892), (50682, 23, 3959), (58499, 23, 4949), (55126, 22, 3112), (194312, 22, 5531), (230702, 22, 4167), (307870, 22, 4447), (31983, 21, 4627), (42880, 21, 6477), (84860, 21, 4133), (122739, 21, 4056), (164818, 21, 6390), (14317, 20, 3195), (23456, 20, 2941), (63465, 20, 4305), (131885, 20, 3224), (162239, 20, 4799), (164257, 20, 4293), (12849, 19, 3540)]
+
+#### 5.1.3 Edges Connectivity  | reduced_95_mild_dis_cDBG75
+- Edges connectivity
+    ```tsv
+    compID	(-4, 0)	(-4, 1)	(-4, 2)	(-4, 3)	(-4, 4)	(-3, 0)	(-3, 1)	(-3, 2)	(-3, 3)	(-3, 4)	(-2, 0)	(-2, 1)	(-2, 2)	(-2, 3)	(-2, 4)	(-1, 0)	(-1, 1)	(-1, 2)	(-1, 3)	(-1, 4)	(0, 0)	(0, 1)	(0, 2)	(0, 3)	(0, 4)
+    8556	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	0	0	0	0
     ```
