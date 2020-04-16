@@ -5,11 +5,8 @@ Input: Unitigs file generated from BCALM.
 Output: new Unitigs fasta file with modified edges
 
 Run:
-python unitigs_dislinkage.py <GFA_path>
+python unitigs_dislinkage.py  <unitigs_fasta> <kSize> <mode:aggressive|default:mild>
 """
-
-# [TODO] IF the there is no remaining edges in the header and length of unitig < 200, remove the unitig
-# [TODO] IF the length < 200 & first and last kmer low complexity (remove it)
 
 import os
 import subprocess
@@ -21,10 +18,19 @@ from statistics import median
 class Dust:
     kSize = int()
 
-    def __init__(self, kSize):
+    def __init__(self, kSize, mode="mild"):
         self.kSize = kSize
-        #self.max_dust = self.maxDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=kSize, min_window_size=kSize)
-        self.max_dust = self.medianDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=21, min_window_size=21)
+
+        if mode == "mild":
+            self.initial = "ACTG"
+        elif mode == "aggressive":
+            self.initial = "ACTGGTCA"
+
+        self.max_dust = self.maxDustWindow(read=str(self.initial * kSize)[0:kSize], window_size=kSize,
+                                           min_window_size=kSize)
+        print(f"Max dust: {self.max_dust}")
+        print(f"Filteration mode: {mode}")
+        # self.max_dust = self.medianDustWindow(read=str("ACTG" * kSize)[0:kSize], window_size=21, min_window_size=21)
 
     def maxDustWindow(self, read, window_size, min_window_size):
         max_score = 0.0
@@ -42,7 +48,7 @@ class Dust:
 
         return max_score
 
-    def medianDustWindow(self, read, window_size = 21, min_window_size = 21):
+    def medianDustWindow(self, read, window_size=21, min_window_size=21):
         max_scores = []
         r_l = len(read)
         for i in range(0, r_l - 1):
@@ -78,7 +84,12 @@ class Dust:
 
 
 if len(sys.argv) < 3:
-    sys.exit("run: python unitigs_dislinkage.py <unitigs_fasta> <kSize>")
+    sys.exit("run: python unitigs_dislinkage.py <unitigs_fasta> <kSize> <mode:aggressive|default:mild>")
+
+filter_mode = "mild"
+
+if len(sys.argv) == 4:
+    mode = sys.argv[3]
 
 unitigs_file = sys.argv[1]
 
@@ -95,9 +106,13 @@ kSize = int(sys.argv[2]) - 1
 
 no_seqs = int(subprocess.getoutput('wc -l ' + unitigs_file).split()[0]) // 2
 
-DUST = Dust(kSize)
+DUST = Dust(kSize, mode=filter_mode)
 
-output_file = "filtered_dislinked_" + os.path.basename(unitigs_file)
+output_file = str()
+if filter_mode == "mild":
+    output_file = "mild_dislinked_" + os.path.basename(unitigs_file)
+else:
+    output_file = "aggressive_dislinked_" + os.path.basename(unitigs_file)
 
 print(f"Parsing {unitigs_file} ...")
 
@@ -112,8 +127,8 @@ with open(unitigs_file, 'r') as unitigsReader, open(output_file, 'w') as unitigs
 
         should_be_removed = list()
 
-        first_k = bool(DUST.medianDustWindow(seq[:DUST.kSize]) > DUST.max_dust)
-        last_k = bool(DUST.medianDustWindow(seq[-DUST.kSize:]) > DUST.max_dust)
+        first_k = bool(DUST.calculateDustScore(seq[:DUST.kSize]) > DUST.max_dust)
+        last_k = bool(DUST.calculateDustScore(seq[-DUST.kSize:]) > DUST.max_dust)
 
         if first_k and last_k:
             if len(seq) <= LENGTH_THRESHOLD:
