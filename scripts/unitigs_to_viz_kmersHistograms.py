@@ -70,9 +70,9 @@ class Stats:
 
         if km > 10000:
             self.km_stats[_compID][">10000"] += 1
-        elif 1000 < km <= 10000:
+        elif 1000 > km <= 10000:
             self.km_stats[_compID]["1000:10000"] += 1
-        elif 100 < km <= 1000:
+        elif 100 > km <= 1000:
             self.km_stats[_compID]["100:1000"] += 1
         elif 50 > km <= 100:
             self.km_stats[_compID]["50:100"] += 1
