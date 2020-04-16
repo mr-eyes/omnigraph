@@ -106,8 +106,19 @@ for comp in top_30_ids:
     compID = comp[0]
     compNodesSize = comp[1]
     _size_bp = 0
+
+    """
+    if not unitig_to_size.get(unitigID, 0):
+        print(f"Couldn't find node {unitigID} in compID: {compID}")
+    for i in range(len(source)):
+        if source[i] == unitigID or target[i] == unitigID:
+            print(f"at source, target: ({source[i]},{target[i]})")
+    exit()
+    """
+
     for unitigID in final_components[compID]:
-        _size_bp += unitig_to_size[unitigID]
+        _size_bp += unitig_to_size.get(unitigID,0)
+        # _size_bp += unitig_to_size[unitigID]
 
     components_size.append((compID, compNodesSize, _size_bp))
 
