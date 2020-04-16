@@ -233,6 +233,50 @@ file                          format  type   num_seqs      sum_len  min_len  avg
 reps_unitigs_cDBG75_0.985.fa  FASTA   DNA   5,939,098  650,190,787       75    109.5    1,683
 ```
 
+##### 4.3.1.1 LN & KM stats
+
+```txt
+Stats for all components: 
+
+LN Field Stats: 
+
+ - Max LN: 856.9
+	 - Frequency of unitigs with length == 75 : 515842
+	 - Sum of frequencies of unitigs length [76:80] : 1044177
+	 - Sum of frequencies of unitigs length [81:151] : 4012080
+	 - Sum of frequencies of unitigs length >151 : 366999
+
+KM Field Stats: 
+	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
+	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
+	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 5576016
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188558
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+	 - Frequency of unitigs with KM [> 10000.0] : 0
+
+ ------------------------------ 
+
+Stats for component 709:
+
+	LN Field Stats: 
+		 - Max Ln:  241.7 
+		 - Frequency of unitigs with length == 75 : 1067
+		 - Sum of frequencies of unitigs length [76:80] : 3503
+		 - Sum of frequencies of unitigs length [81:151] : 20492
+		 - Sum of frequencies of unitigs length >151 : 60
+
+	KM Field Stats: 
+		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
+		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
+		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
+		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 24941
+		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 35
+		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+		 - Frequency of unitigs with KM [> 10000.0] : 0
+
+```
+
 - Number of nodes: 4839097
 - Number of connected components: 4487423
 - Largest component number of nodes: 41
@@ -291,6 +335,50 @@ reps_unitigs_cDBG75_0.985.fa  FASTA   DNA   5,939,098  650,190,787       75    1
 ```tsv
 file                          format  type   num_seqs      sum_len  min_len  avg_len  max_len
 reps_unitigs_cDBG75_0.985.fa  FASTA   DNA   5,903,962  647,039,807       75    109.6    1,683
+
+```
+
+##### 5.1.1.1 LN & KM Stats
+
+```text
+Stats for all components: 
+
+LN Field Stats: 
+
+ - Max LN: 856.9
+	 - Frequency of unitigs with length == 75 : 513805
+	 - Sum of frequencies of unitigs length [76:80] : 1034242
+	 - Sum of frequencies of unitigs length [81:151] : 3988916
+	 - Sum of frequencies of unitigs length >151 : 366999
+
+KM Field Stats: 
+	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
+	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
+	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 5541224
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188473
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+	 - Frequency of unitigs with KM [> 10000.0] : 0
+
+ ------------------------------ 
+
+Stats for component 707:
+
+	LN Field Stats: 
+		 - Max Ln:  241.7 
+		 - Frequency of unitigs with length == 75 : 1067
+		 - Sum of frequencies of unitigs length [76:80] : 3499
+		 - Sum of frequencies of unitigs length [81:151] : 20450
+		 - Sum of frequencies of unitigs length >151 : 60
+
+	KM Field Stats: 
+		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
+		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
+		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
+		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 24895
+		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 35
+		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+		 - Frequency of unitigs with KM [> 10000.0] : 0
 
 ```
 
