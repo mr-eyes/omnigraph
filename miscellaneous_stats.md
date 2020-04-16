@@ -249,9 +249,9 @@ KM Field Stats:
 	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
 	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
 	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 5576016
-	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188558
-	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 5939098
 	 - Frequency of unitigs with KM [> 10000.0] : 0
 
  ------------------------------ 
@@ -269,18 +269,13 @@ Stats for component 709:
 		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
 		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
 		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 24941
-		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 35
-		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
+		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
+		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 25122
 		 - Frequency of unitigs with KM [> 10000.0] : 0
 
 ```
 
-- Number of nodes: 4839097
-- Number of connected components: 4487423
-- Largest component number of nodes: 41
-- Largest component length (bp): 9393
-- Top 30 components: 
 - Bandage stats
     ```
     Node count:                       5939098
@@ -377,9 +372,9 @@ KM Field Stats:
 	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
 	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
 	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 5541224
-	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188473
-	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 5903962
 	 - Frequency of unitigs with KM [> 10000.0] : 0
 
  ------------------------------ 
@@ -397,17 +392,13 @@ Stats for component 707:
 		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
 		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
 		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 24895
-		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 35
-		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
+		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
+		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
+		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 25076
 		 - Frequency of unitigs with KM [> 10000.0] : 0
 
 ```
 
-- Number of nodes: 1980172
-- Number of connected components: 1848471
-- Largest component number of nodes: 29
-- Largest component length (bp): 8556
 - Bandage stats
     ```
     Node count:                       5903962
