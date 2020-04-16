@@ -196,10 +196,10 @@ stats.get_stats_all_comps()
 stats.get_stats_of_comp(focus_compID)
 
 for key, fig in figs.items():
-    print(f"Saving {key} HTML")
-    output_file = ".".join(os.path.basename(unitigs_file).split(".")[:-1]) + f"{key}_histo.html"
-    fig.update_layout(barmode='group', )
-    plot(fig, filename=output_file, auto_open=False)
+    # print(f"Saving {key} HTML")
+    # output_file = ".".join(os.path.basename(unitigs_file).split(".")[:-1]) + f"{key}_histo.html"
+    # fig.update_layout(barmode='group', )
+    # plot(fig, filename=output_file, auto_open=False)
 
     print(f"Saving {key}  y Log HTML")
     output_file = ".".join(os.path.basename(unitigs_file).split(".")[:-1]) + f"{key}_yLog_histo.html"
