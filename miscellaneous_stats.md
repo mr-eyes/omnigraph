@@ -1,35 +1,5 @@
 # Miscellaneous Stats
 
-1. Stats ln,km,kc, (Before clustering only) + (original & dislinked)
-2. Stats ln (After clustering only) + (original & dislinked)
-3. Edge connectivity (After clustering) + (original & dislinked)
-4. Connected components Bandage + My script (After clustering) + (original & dislinked)
-5. Statistics of large component (After clustering only) + (original & dislinked)
-
-
-> Mild dislinkage: maxDust=8.x ACTG
-> Aggressive dislinkage: maxDust=4 ACTGGTCA
-
-- [ ] Repeat the jobs on mild
-
-
-1. cDBG_SRR11015356_k75.unitigs.fa (Repeat for Mild and Aggressive )
-
-- Number of nodes: 11824622
-- Number of components: 1906331
-- Largest components
-    ```text
-    Top 30 components: (ID, nodesCount, length_BP)
-    [(8, 5201966, 470491350), (555, 22477, 2008781), (3177, 19309, 1761536), (4810, 14135, 1305499), (66, 12354, 1143652), (26123, 11981, 1034014), (9452, 11535, 1066741), (14165, 11121, 960225), (2216, 10813, 979662), (4596, 10095, 867800), (8445, 9866, 865500), (5812, 9649, 816595), (3384, 9408, 827137), (6272, 9257, 795484), (14023, 9233, 808414), (3336, 9090, 807168), (22448, 9076, 776111), (6651, 8815, 800158), (23800, 8784, 781078), (6839, 8656, 759741), (20924, 8408, 723026), (15771, 7792, 689236), (2011, 7550, 681242), (11125, 7423, 708792), (19037, 7193, 625471), (2362, 7175, 707541), (2723, 7167, 619874), (5438, 7115, 643292), (13833, 7022, 597035), (7849, 6817, 609016)]
-    ```
-- Edges Connectivity 
-    ```tsv
-    compID	(-4, 0)	(-4, 1)	(-4, 2)	(-4, 3)	(-4, 4)	(-3, 0)	(-3, 1)	(-3, 2)	(-3, 3)	(-3, 4)	(-2, 0)	(-2, 1)	(-2, 2)	(-2, 3)	(-2, 4)	(-1, 0)	(-1, 1)	(-1, 2)	(-1, 3)	(-1, 4)	(0, 0)	(0, 1)	(0, 2)	(0, 3)	(0, 4)
-    8	82886	41162	69691	36960	81015	130942	72139	86606	48163	41567	247224	460590	376980	94777	81562	939186	382702	469180	84783	52068	0	856943	237540	135408	91892
-    ```
-
-
-
 
 ## 1. Original cDBG75
 
@@ -51,6 +21,29 @@
     compID	(-4, 0)	(-4, 1)	(-4, 2)	(-4, 3)	(-4, 4)	(-3, 0)	(-3, 1)	(-3, 2)	(-3, 3)	(-3, 4)	(-2, 0)	(-2, 1)	(-2, 2)	(-2, 3)	(-2, 4)	(-1, 0)	(-1, 1)	(-1, 2)	(-1, 3)	(-1, 4)	(0, 0)	(0, 1)	(0, 2)	(0, 3)	(0, 4)
     8	82886	41162	69691	36960	81015	130942	72139	86606	48163	41567	247224	460590	376980	94777	81562	939186	382702	469180	84783	52068	0	856943	237540	135408	91892
     ```
+- Bandage info
+    ```tsv
+    Node count:                       11824622
+    Edge count:                       12050926
+    Smallest edge overlap (bp):       74
+    Largest edge overlap (bp):        74
+    Total length (bp):                1133741131
+    Total length no overlaps (bp):    394207035
+    Dead ends:                        8969729
+    Percentage dead ends:             37.9282%
+    Connected components:             1906331
+    Largest component (bp):           470491350
+    Total length orphaned nodes (bp): 470491350
+    N50 (bp):                         88
+    Shortest node (bp):               75
+    Lower quartile node (bp):         75
+    Median node (bp):                 81
+    Upper quartile node (bp):         103
+    Longest node (bp):                1683
+    Median depth:                     1
+    Estimated sequence length (bp):   1553644566
+    ```
+
 ### 1.3 Kmers metadata histogram
 - **Unitigs metadata histogram:**
     - [KM](https://www.mr-eyes.com/omnigraph/cDBG75/report/original/cDBG_SRR11015356_k75.unitigsKM_histo.html)
@@ -59,7 +52,47 @@
     - [LN (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/original/cDBG_SRR11015356_k75.unitigsLN_yLog_histo.html)
     - [KC](https://www.mr-eyes.com/omnigraph/cDBG75/report/original/cDBG_SRR11015356_k75.unitigsKC_histo.html)
     - [KC (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/original/cDBG_SRR11015356_k75.unitigsKC_yLog_histo.html)
-
+- LN & KM Stats
+    ```text
+    Stats for all components: 
+    
+    LN Field Stats: 
+    
+     - Max LN: 1683
+         - Frequency of unitigs with length == 75 : 2973797
+         - Sum of frequencies of unitigs length [76:80] : 2849278
+         - Sum of frequencies of unitigs length [81:151] : 5633912
+         - Sum of frequencies of unitigs length >151 : 367635
+    
+    KM Field Stats: 
+         - Frequency of unitigs with KM [1.0: <= 2.0] : 4255575
+         - Frequency of unitigs with KM [> 2.0: <= 10.0] : 3529266
+         - Frequency of unitigs with KM [> 10.0:<= 50.0] : 780929
+         - Frequency of unitigs with KM [> 50.0:<= 100.0] : 425439
+         - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 1916180
+         - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 860851
+         - Frequency of unitigs with KM [> 10000.0] : 56382
+    
+     ------------------------------ 
+    
+    Stats for component 8:
+    
+        LN Field Stats: 
+             - Max Ln:  1640 
+             - Frequency of unitigs with length == 75 : 1608339
+             - Sum of frequencies of unitigs length [76:80] : 1308768
+             - Sum of frequencies of unitigs length [81:151] : 2238687
+             - Sum of frequencies of unitigs length >151 : 46172
+    
+        KM Field Stats: 
+             - Frequency of unitigs with KM [1.0: <= 2.0] : 1426699
+             - Frequency of unitigs with KM [> 2.0: <= 10.0] : 1739636
+             - Frequency of unitigs with KM [> 10.0:<= 50.0] : 446265
+             - Frequency of unitigs with KM [> 50.0:<= 100.0] : 172360
+             - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 777843
+             - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 585944
+             - Frequency of unitigs with KM [> 10000.0] : 53219
+    ```
 
 ---
 
@@ -113,7 +146,48 @@
     - [LN (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/aggressive_dislinked/aggressive_dislinked_cDBG_SRR11015356_k75.unitigsLN_yLog_histo.html)
     - [KC (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/aggressive_dislinked/aggressive_dislinked_cDBG_SRR11015356_k75.unitigsKC_yLog_histo.html)
 
+- LN & KM Stats
+    ```text
+    Stats for all components: 
+    
+    LN Field Stats: 
+    
+     - Max LN: 1683
+    	 - Frequency of unitigs with length == 75 : 2931500
+    	 - Sum of frequencies of unitigs length [76:80] : 2791099
+    	 - Sum of frequencies of unitigs length [81:151] : 5581822
+    	 - Sum of frequencies of unitigs length >151 : 367635
+    
+    KM Field Stats: 
+    	 - Frequency of unitigs with KM [1.0: <= 2.0] : 4202427
+    	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 3472800
+    	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 756188
+    	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 419277
+    	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 1905585
+    	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 859420
+    	 - Frequency of unitigs with KM [> 10000.0] : 56359
+    
+     ------------------------------ 
+    
+    Stats for component 8:
+    
+    	LN Field Stats: 
+    		 - Max Ln:  1359 
+    		 - Frequency of unitigs with length == 75 : 1424890
+    		 - Sum of frequencies of unitigs length [76:80] : 1131388
+    		 - Sum of frequencies of unitigs length [81:151] : 1992836
+    		 - Sum of frequencies of unitigs length >151 : 38751
+    
+    	KM Field Stats: 
+    		 - Frequency of unitigs with KM [1.0: <= 2.0] : 1248791
+    		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 1551404
+    		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 395622
+    		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 147340
+    		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 659347
+    		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 532373
+    		 - Frequency of unitigs with KM [> 10000.0] : 52988
 
+    ```
 
 ---
 
@@ -167,8 +241,47 @@
     - [KM (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/mild_dislinked/mild_filtered_dislinked_cDBG_SRR11015356_k75.unitigsKM_yLog_histo.html)
     - [LN (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/mild_dislinked/mild_filtered_dislinked_cDBG_SRR11015356_k75.unitigsLN_yLog_histo.html)
     - [KC (y log scale)](https://www.mr-eyes.com/omnigraph/cDBG75/report/mild_dislinked/mild_filtered_dislinked_cDBG_SRR11015356_k75.unitigsKC_yLog_histo.html)
-
-
+- LN & KM Stats
+    ```text
+    Stats for all components: 
+    
+    LN Field Stats: 
+    
+     - Max LN: 1683
+         - Frequency of unitigs with length == 75 : 2955448
+         - Sum of frequencies of unitigs length [76:80] : 2825047
+         - Sum of frequencies of unitigs length [81:151] : 5618408
+         - Sum of frequencies of unitigs length >151 : 367635
+    
+    KM Field Stats: 
+         - Frequency of unitigs with KM [1.0: <= 2.0] : 4236666
+         - Frequency of unitigs with KM [> 2.0: <= 10.0] : 3506450
+         - Frequency of unitigs with KM [> 10.0:<= 50.0] : 770661
+         - Frequency of unitigs with KM [> 50.0:<= 100.0] : 423062
+         - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 1912802
+         - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 860526
+         - Frequency of unitigs with KM [> 10000.0] : 56371
+    
+     ------------------------------ 
+    
+    Stats for component 8:
+    
+        LN Field Stats: 
+             - Max Ln:  1425 
+             - Frequency of unitigs with length == 75 : 1532054
+             - Sum of frequencies of unitigs length [76:80] : 1234110
+             - Sum of frequencies of unitigs length [81:151] : 2140073
+             - Sum of frequencies of unitigs length >151 : 43533
+    
+        KM Field Stats: 
+             - Frequency of unitigs with KM [1.0: <= 2.0] : 1354461
+             - Frequency of unitigs with KM [> 2.0: <= 10.0] : 1659628
+             - Frequency of unitigs with KM [> 10.0:<= 50.0] : 424271
+             - Frequency of unitigs with KM [> 50.0:<= 100.0] : 162360
+             - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 730815
+             - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 565217
+             - Frequency of unitigs with KM [> 10000.0] : 53018
+    ```
 
 
 
@@ -239,43 +352,21 @@ Stats for all components:
 
 LN Field Stats: 
 
- - Max LN: 856.9
+ - Max LN: 1683
 	 - Frequency of unitigs with length == 75 : 515842
 	 - Sum of frequencies of unitigs length [76:80] : 1044177
 	 - Sum of frequencies of unitigs length [81:151] : 4012080
 	 - Sum of frequencies of unitigs length >151 : 366999
 
 KM Field Stats: 
-	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
-	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
-	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
-	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
-	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 5939098
+	 - Frequency of unitigs with KM [1.0: <= 2.0] : 2871415
+	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 2351611
+	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 353595
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 173919
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188558
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
 	 - Frequency of unitigs with KM [> 10000.0] : 0
-
- ------------------------------ 
-
-Stats for component 709:
-
-	LN Field Stats: 
-		 - Max Ln:  241.7 
-		 - Frequency of unitigs with length == 75 : 1067
-		 - Sum of frequencies of unitigs length [76:80] : 3503
-		 - Sum of frequencies of unitigs length [81:151] : 20492
-		 - Sum of frequencies of unitigs length >151 : 60
-
-	KM Field Stats: 
-		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
-		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
-		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
-		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
-		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 25122
-		 - Frequency of unitigs with KM [> 10000.0] : 0
-
 ```
-
 - Bandage stats
     ```
     Node count:                       5939098
@@ -311,7 +402,6 @@ Stats for component 709:
     ```text
     Top 30 components: (ID, nodesCount, length_BP)
     (26505, 44, 8794), (258180, 42, 6177), (2797, 41, 9393), (371504, 41, 7221), (207569, 40, 5723), (16974, 38, 6284), (818166, 38, 4774), (106127, 37, 9169), (427888, 36, 6204), (71935, 35, 6442), (229822, 35, 5520), (254432, 35, 7190), (400024, 35, 5758), (127294, 33, 4593), (195691, 33, 7215), (247591, 33, 4272), (594183, 33, 6197), (228022, 32, 4418), (435654, 32, 6022), (115508, 31, 5034), (127789, 31, 5796), (284492, 31, 5782), (367909, 31, 5050), (487857, 31, 5944), (203517, 30, 3901), (383374, 30, 4915), (385497, 30, 3765), (398468, 30, 5715), (31235, 29, 6185), (71113, 29, 4182)```
-
 - Bandage Info
     ```text
     Node count:                       4868502
@@ -362,41 +452,20 @@ Stats for all components:
 
 LN Field Stats: 
 
- - Max LN: 856.9
+ - Max LN: 1683
 	 - Frequency of unitigs with length == 75 : 513805
 	 - Sum of frequencies of unitigs length [76:80] : 1034242
 	 - Sum of frequencies of unitigs length [81:151] : 3988916
 	 - Sum of frequencies of unitigs length >151 : 366999
 
 KM Field Stats: 
-	 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
-	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
-	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
-	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
-	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 5903962
+	 - Frequency of unitigs with KM [1.0: <= 2.0] : 2854823
+	 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 2335754
+	 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 351250
+	 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 173662
+	 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 188473
+	 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 0
 	 - Frequency of unitigs with KM [> 10000.0] : 0
-
- ------------------------------ 
-
-Stats for component 707:
-
-	LN Field Stats: 
-		 - Max Ln:  241.7 
-		 - Frequency of unitigs with length == 75 : 1067
-		 - Sum of frequencies of unitigs length [76:80] : 3499
-		 - Sum of frequencies of unitigs length [81:151] : 20450
-		 - Sum of frequencies of unitigs length >151 : 60
-
-	KM Field Stats: 
-		 - Frequency of unitigs with KM [1.0: <= 2.0] : 0
-		 - Frequency of unitigs with KM [> 2.0: <= 10.0] : 0
-		 - Frequency of unitigs with KM [> 10.0:<= 50.0] : 0
-		 - Frequency of unitigs with KM [> 50.0:<= 100.0] : 0
-		 - Frequency of unitigs with KM [> 100.0:<= 1000.0] : 0
-		 - Frequency of unitigs with KM [> 1000.0:<= 10000.0] : 25076
-		 - Frequency of unitigs with KM [> 10000.0] : 0
-
 ```
 
 - Bandage stats
