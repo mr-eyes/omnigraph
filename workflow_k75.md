@@ -20,18 +20,7 @@ Key points:
 3. cDBG Indexing
     - To be continued.
 
-## 0. Setting variables
-```bash
-
-KMER_SIZE=75
-
-
-MILD_STATS=stats_mild_cDBG${KMER_SIZE}.txt
-AGGRESSIVE_STATS=stats_aggressive_cDBG${KMER_SIZE}.txt
-
-SCRIPTS=scripts/ # scripts path in omnigraph/scripts
-
-```
+---
 
 ## 1. Main Data preparation
 
