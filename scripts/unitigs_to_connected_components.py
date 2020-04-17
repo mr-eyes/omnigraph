@@ -43,7 +43,7 @@ def union(x, y):
         leaders[lx] = ly
 
 
-print("Parsing Fasta file ...")
+print("Parsing Fasta file ...", file=sys.stderr)
 
 source = []
 target = []
@@ -68,7 +68,7 @@ with open(unitigs_path, 'r') as unitigsReader:
             source.append(unitig_id)
             target.append(link)
 
-print("Generating connected components...")
+print("Generating connected components...", file=sys.stderr)
 leaders = defaultdict(lambda: None)
 
 for i in range(len(source)):
@@ -82,7 +82,7 @@ for x in leaders:
 print(f"number of components: {len(groups)}")
 
 output_file = os.path.basename(unitigs_path) + ".components.csv"
-print(f"Dumping to {output_file}")
+print(f"Dumping to {output_file}", file=sys.stderr)
 
 final_components = dict()
 components_length = dict()
@@ -102,6 +102,10 @@ groups.clear()
 
 top_30_ids = Counter(components_length).most_common(30)
 components_size = list()
+
+largest_component_in_nodes = [0, 0]
+largest_component_in_bp = [0, 0]
+
 for comp in top_30_ids:
     compID = comp[0]
     compNodesSize = comp[1]
@@ -109,7 +113,7 @@ for comp in top_30_ids:
 
     """
     if not unitig_to_size.get(unitigID, 0):
-        print(f"Couldn't find node {unitigID} in compID: {compID}")
+        print(f"Couldn't find node {unitigID} in _compID: {_compID}")
     for i in range(len(source)):
         if source[i] == unitigID or target[i] == unitigID:
             print(f"at source, target: ({source[i]},{target[i]})")
@@ -117,13 +121,27 @@ for comp in top_30_ids:
     """
 
     for unitigID in final_components[compID]:
-        _size_bp += unitig_to_size.get(unitigID,0)
-        # _size_bp += unitig_to_size[unitigID]
+        _size_bp += unitig_to_size.get(unitigID, 0)
+        # _size_bp += unitig_to_size[unitigID] # uncomment this to assert no missing unitigs
 
     components_size.append((compID, compNodesSize, _size_bp))
 
-# Finding 3 highest values
-high = k
+    # To be printed separately
+    if compNodesSize > largest_component_in_nodes[1]:
+        largest_component_in_nodes[0] = compID
+        largest_component_in_nodes[1] = compNodesSize
+
+    if _size_bp > largest_component_in_bp[1]:
+        largest_component_in_bp[0] = compID
+        largest_component_in_bp[1] = _size_bp
+
+# Print largest components
+
+print(f"largest_comp_nodes\t{largest_component_in_nodes[0]}")
+print(f"largest_comp_bp\t{largest_component_in_bp[0]}")
+
+print("----" * 10)
 print(f"Top 30 components: (ID, nodesCount, length_BP)\n{components_size}")
+print("----" * 10)
 
 print("Done", file=sys.stderr)
