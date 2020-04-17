@@ -1,5 +1,37 @@
 # Workflow
 
+**All configs are inherited from config.ini**
+**This to be changed later by full system arguments support**
+
+```ini
+; MySQL connection
+[mysql]
+host = localhost
+database = universal_transcriptome
+user = root
+password = 
+;kProcessor Indexing
+[kProcessor]
+ksize = 31
+Q = 27
+; Integer hashing
+hashing_mode = 1
+; Kmers
+kmers_mode = 1
+chunk_size = 10000
+idx_prefix = /home/mabuelanin/Desktop/dev-plan/omnigraph/data/idx_cDBG_SRR11015356_k31unitigs/idx_idx_cDBG_SRR11015356_k31unitigs
+collective_comps_indexes_dir = /home/mabuelanin/Desktop/dev-plan/omnigraph/data/idx_all_originalComps/*unitigs
+[Reads]
+read1= /home/mabuelanin/Desktop/dev-plan/omnigraph/test_data/SRR11015356_1.fasta
+read2= /home/mabuelanin/Desktop/dev-plan/omnigraph/test_data/SRR11015356_2.fasta
+seqs_no= 67954363
+[SQLite]
+db_file = /home/mabuelanin/Desktop/dev-plan/omnigraph/query1_result.db
+[output_fasta]
+fasta_dir = /home/mabuelanin/Desktop/dev-plan/omnigraph/fasta_out
+```
+
+
 ## 1. Creating the cDBG
 
 **Steps:**
@@ -7,16 +39,13 @@
 ### 1.1 BCalm cDBG
 
 ```bash
-cd data/
 
 ls -1 *fasta > list_reads
-touch 1.1_cDBG_log.txt
-/usr/bin/time -v bcalm -kmer-size 31 -abundance-min 3 -max-memory 12000 -out cDBG_SRR11015356_k31 -in list_reads &> 1.1_cDBG_log.txt
+bcalm -kmer-size 31 -abundance-min 3 -max-memory 12000 -out cDBG_SRR11015356_k31 -in list_reads
 
 # Convert to GFA
 
-wget https://raw.githubusercontent.com/GATB/bcalm/master/scripts/convertToGFA.py
-python convertToGFA.py cDBG_SRR11015356_k31.unitigs.fa cDBG_SRR11015356_k31.unitigs.gfa 31 --single-directed
+python scripts/unitigsToGFA.py cDBG_SRR11015356_k31.unitigs.fa cDBG_SRR11015356_k31.unitigs.gfa 31 --single-directed
 
 ```
 
@@ -31,16 +60,7 @@ cDBG_SRR11015356_k31.unitigs.fa  FASTA   DNA   9,145,177  447,026,231       31  
 
 ## 2 Connected components
 
-### 2.1 Initialize mySQL
-
-1. Install mySQL
-2. From the PhpMyAdmin or from the SQL command CLI, create the DB:
-    - Login as root
-    - `CREATE DATABASE universal_transcriptome;`
-3. Create the unitigs table:
-    - [mySQL Commands](./src/mysql_scripts/create_unitigs_tracking.sql)
-
-#### 2.2 Get the connected components from the GFA
+#### 2.1 Get the connected components from the GFA
 
 ```bash
 python scripts/gfa_to_connected_components.py data/cDBG_SRR11015356_k31.unitigs.gfa
@@ -64,7 +84,7 @@ STATS
 
 ```
 
-#### 2.3 Trial to performe edges dislinkage
+#### 2.2 Trial to perform edges dislinkage
 
 ```bash
 python kExplorer/graph_analysis/1-dislinkage.py cDBG_SRR11015356_k31.unitigs.gfa 31
@@ -89,21 +109,11 @@ STATS
 
 ```
 
-
 #### 2.3 Add the collective components column (50k) collective component
 
 ```bash
 python scripts/originalComponentsToCollectiveComponents.py cDBG_SRR11015356_k31.unitigs.gfa.components.csv 180
 ```
-
-#### 2.4 Insert the original & collective components into the mySQL unitigs_tracking table
-
-```bash
-python mySQL_insert_components.py collectiveComps_cDBG_SRR11015356_k31.unitigs.gfa.components.tsv
-```
-
-> time: ~17 mins
-> Size on disk: 885.6 MiB due to the multiple indeces.
 
 ---
 
@@ -156,7 +166,7 @@ Paired End File: 1 | mapped_reads  %97.3955
 Scenario (1) : Count: 61043395 | Mapped: from matching the first and last kmers only.
 Scenario (2) : Count: 283071 | Unmapped: Both terminal kmers matched but on different components.
 Scenario (3) : Count: 1279901 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
-Scenario (4) : Count: 206889 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (4) : Count: 206889 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersection > 1.
 Scenario (5) : Count: 5141107 | Mapped: Partial match and read is trimmed.
 Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
 ---------------------------------
@@ -164,7 +174,7 @@ Paired End File: 2 | mapped_reads  %94.5279
 Scenario (1) : Count: 57128736 | Mapped: from matching the first and last kmers only.
 Scenario (2) : Count: 323910 | Unmapped: Both terminal kmers matched but on different components.
 Scenario (3) : Count: 3030808 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
-Scenario (4) : Count: 363791 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (4) : Count: 363791 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersection > 1.
 Scenario (5) : Count: 7107118 | Mapped: Partial match and read is trimmed.
 Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
 RESULT
@@ -174,14 +184,6 @@ RESULT
 - **Time:** 3:49:20
 - **Mem:** 6.56 GB
 - **DB FIle Size:** 24 GB
-
-
-##### Sqlite DB insights **[Debugging purposes]**
-
-```sqlite
-select seq1_collective_component, count(seq1_collective_component) from reads group by seq1_collective_component;
-select seq2_collective_component, count(seq2_collective_component) from reads group by seq2_collective_component;
-```
 
 
 #### 3.4 Perform second query
