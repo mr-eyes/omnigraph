@@ -195,7 +195,7 @@ for SIM in 0.95 0.97 0.985
 do
     REPS_STD_OUT=stats_reps_unitigs_${OUT_PREFIX}_${SIM}.txt
     python ${SCRIPTS}/unitigs_to_connected_components.py reps_unitigs_${OUT_PREFIX}_${SIM}.fa > ${REPS_STD_OUT}
-    largest_component=$(cat ${STD_OUT}| grep -w "largest_comp_bp" | cut -f2)
+    largest_component=$(cat ${REPS_STD_OUT}| grep -w "largest_comp_bp" | cut -f2)
     python ${SCRIPTS}/unitigs_to_viz_kmersHistograms.py reps_unitigs_${OUT_PREFIX}_${SIM}.fa reps_unitigs_${OUT_PREFIX}_${SIM}.fa.components.csv ${largest_component} >>  "${SIM}_${STD_OUT}"
 done
 
@@ -262,7 +262,7 @@ for SIM in 0.95 0.97 0.985
 do
     REPS_STD_OUT=stats_reps_unitigs_${OUT_PREFIX}_${SIM}.txt
     python ${SCRIPTS}/unitigs_to_connected_components.py reps_unitigs_${OUT_PREFIX}_${SIM}.fa > ${REPS_STD_OUT}
-    largest_component=$(cat ${STD_OUT}| grep -w "largest_comp_bp" | cut -f2)
+    largest_component=$(cat ${REPS_STD_OUT}| grep -w "largest_comp_bp" | cut -f2)
     python ${SCRIPTS}/unitigs_to_viz_kmersHistograms.py reps_unitigs_${OUT_PREFIX}_${SIM}.fa reps_unitigs_${OUT_PREFIX}_${SIM}.fa.components.csv ${largest_component} >>  "${SIM}_${STD_OUT}"
 done
 
