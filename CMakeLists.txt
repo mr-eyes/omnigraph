@@ -21,6 +21,7 @@ include_directories (${kProcessor_INCLUDE_PATH})
 # END kProcessor Setup
 # ----------------------------------------------------------------------------
 
+
 include_directories("${PROJECT_SOURCE_DIR}/includes")
 include_directories("${PROJECT_SOURCE_DIR}/lib/inih")
 include_directories(${PROJECT_SOURCE_DIR}/lib/sqlite3pp/)
@@ -37,6 +38,27 @@ add_executable (query_2 second_query.cpp src/omnigraph.cpp src/sqliteManager.cpp
 target_link_libraries (query_2 kProcessor pthread z sqlite3)
 target_include_directories(query_2 INTERFACE ${kProcessor_INCLUDE_PATH})
 
+add_executable (manualIndex manual_indexing.cpp)
+target_link_libraries (manualIndex kProcessor pthread z sqlite3)
+target_include_directories(manualIndex INTERFACE ${kProcessor_INCLUDE_PATH})
+
+add_executable (kp_large kProcessor_bigkmer.cpp)
+target_link_libraries (kp_large kProcessor pthread z sqlite3)
+target_include_directories(kp_large INTERFACE ${kProcessor_INCLUDE_PATH})
+
+
+#add_executable (singleQuery single_query.cpp src/omnigraph.cpp)
+#target_link_libraries (singleQuery kProcessor pthread z sqlite3)
+#target_include_directories(singleQuery INTERFACE ${kProcessor_INCLUDE_PATH})
+
+#add_executable (tryGlob try_glob.cpp)
+
+#add_executable (tryGz try_gz.cpp)
+#target_link_libraries (tryGz z)
+
+#add_executable (tryKD try_KD.cpp)
+
+#target_include_directories(tryKD INTERFACE ${kProcessor_INCLUDE_PATH})
 
 
 
