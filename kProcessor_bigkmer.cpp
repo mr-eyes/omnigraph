@@ -12,9 +12,9 @@
 
 using namespace std;
 
-void parse_namesFile(const string &names_fileName, flat_hash_map<string, uint64_t> &groupNameMap) {
+void parse_namesFile(const string &names_fileName, flat_hash_map<uint32_t, uint32_t> &groupNameMap) {
     ifstream namesFile(names_fileName.c_str());
-    string seqName, groupName;
+    uint32_t componentID, unitigID;
     string line;
     while (std::getline(namesFile, line)) {
         std::vector<string> tokens;
@@ -22,9 +22,9 @@ void parse_namesFile(const string &names_fileName, flat_hash_map<string, uint64_
         std::string token;
         while (std::getline(iss, token, '\t'))   // but we can specify a different one
             tokens.push_back(token);
-        seqName = tokens[0];
-        groupName = tokens[1];
-        groupNameMap[seqName] = std::stoi(groupName);
+        unitigID = std::stoi(tokens[0].substr(0, tokens[0].find(' ')));
+        componentID = std::stoi(tokens[1]);
+        groupNameMap[unitigID] = componentID;
     }
 }
 
@@ -37,12 +37,13 @@ int main(int argc, char **argv) {
     int kSize = 75;
     int hashing_mode = 3;
 
-    flat_hash_map<string, uint64_t> seq_to_group;
+    flat_hash_map<uint32_t, uint32_t> seq_to_group;
     cout << "Parsing names file ..." << endl;
     parse_namesFile(names_file, seq_to_group);
     int number_of_sequences = seq_to_group.size();
     cout << "Indexing " << number_of_sequences << " seqs ..." << endl;
     progressbar bar(number_of_sequences);
+    bar.set_done_char("█");
 
 
     kDataFrame *KF = new kDataFramePHMAP(kSize, hashing_mode);
@@ -52,22 +53,36 @@ int main(int argc, char **argv) {
 
     kmerDecoder *KD = new Kmers(filename, chunk_size, kSize);
     KD->setHashingMode(hashing_mode); // Setting hashing mode to bigKmerHasher
-    int counter = 0;
     while (!KD->end()) {
         KD->next_chunk();
-        int seqCounter = 0;
         for (const auto &seq : *KD->getKmers()) {
             bar.update();
-//            cout << "--------------------------------------------\n";
-//            cout << "ID: " << seq.first << endl;
             for (const auto &kmer : seq.second) {
                 original_kmers_no++;
-                KF->setCount(kmer.hash, seq_to_group[seq.first]);
+                KF->setCount(kmer.hash, seq_to_group[std::stoi(seq.first.substr(0, seq.first.find(' ')))]);
             }
-//            cout << "--------------------------------------------\n";
         }
     }
     cout << endl;
+
+
+    // Testing query ----------------------------------------------------------------
+//    KD = new Kmers(filename, chunk_size, kSize);
+//    KD->setHashingMode(hashing_mode); // Setting hashing mode to bigKmerHasher
+//    while (!KD->end()) {
+//        KD->next_chunk();
+//        for (const auto &seq : *KD->getKmers()) {
+//            cout << "--------------------------------------------\n";
+//            cout << "ID: " << seq.first << endl;
+//            for (const auto &kmer : seq.second) {
+//                original_kmers_no++;
+//                cout << kmer.str << " : " << KF->getCount(kmer.hash) << endl;
+//            }
+//            cout << "--------------------------------------------\n";
+//        }
+//    }
+//    cout << endl;
+    // Testing query ----------------------------------------------------------------
 
 //    original_kmers_no = 258719103;
     auto inserted_kmers = (uint64_t) KF->size();
