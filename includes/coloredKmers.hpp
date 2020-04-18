@@ -16,7 +16,8 @@ class ColoredKmers {
 public:
     flat_hash_map<uint64_t, uint32_t> kmers;
     flat_hash_map<uint32_t, uint32_t> unitigToComponent;
-    flat_hash_map<char, uint32_t> metadata;
+    flat_hash_map<char, int> metadata = {{'h', 0},
+                                         {'k', 0}};
     int original_inserted_kmers;
     kmerDecoder *KD;
 
@@ -28,14 +29,17 @@ public:
 
     uint32_t getKmerColor(const string &kmer_str);
 
-    void setKmerColor(uint64_t kmer_hash, uint32_t & unitig_id);
-    void setKmerColor(string & kmer_str, uint32_t & unitig_id);
+    uint32_t getKmerColor(uint64_t &kmer_hash);
+
+    void setKmerColor(uint64_t kmer_hash, uint32_t &unitig_id);
+
+    void setKmerColor(string &kmer_str, uint32_t &unitig_id);
 
     static ColoredKmers *load(const string &prefix);
 
     void load_names(const string &names_tsv_path);
 
-    void *save(const string &prefix);
+    string save(const string &prefix);
 
     int size();
 
@@ -47,7 +51,7 @@ public:
         return this->original_inserted_kmers - this->kmers.size();
     }
 
-    int get_seqs_number(){
+    int get_seqs_number() {
         return this->unitigToComponent.size();
     }
 

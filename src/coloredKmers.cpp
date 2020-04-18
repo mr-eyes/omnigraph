@@ -14,7 +14,14 @@ uint32_t ColoredKmers::getKmerColor(const string &kmer_str) {
         return 0;
     else
         return got->second;
-    return 0;
+}
+
+uint32_t ColoredKmers::getKmerColor(uint64_t &kmer_hash) {
+    phmap::flat_hash_map<uint64_t, uint32_t>::const_iterator got = this->kmers.find(kmer_hash);
+    if (got == this->kmers.end())
+        return 0;
+    else
+        return got->second;
 }
 
 ColoredKmers *ColoredKmers::load(const string &prefix) {
@@ -29,10 +36,9 @@ ColoredKmers *ColoredKmers::load(const string &prefix) {
         cKmer->metadata.load(metadata_in);
         phmap::BinaryInputArchive kmers_in(kmers_file.c_str());
         cKmer->kmers.load(kmers_in);
-
     }
 
-    cKmer->KD = new Kmers(cKmer->metadata['k'], cKmer->metadata['h']);
+    cKmer->KD = new Kmers(cKmer->metadata['k'], 3);
 
     return cKmer;
 }
@@ -54,12 +60,11 @@ inline string create_dir(const string &output_file, int serial) {
     return new_name;
 }
 
-void *ColoredKmers::save(const string &prefix) {
+string ColoredKmers::save(const string &prefix) {
 
     string out_dir = create_dir(prefix, 0);
     const string metadata_file = out_dir + '/' + prefix + "_metadata.omni";
     const string kmers_file = out_dir + '/' + prefix + "_kmers.omni";
-//    const string names_file = out_dir + '/' + prefix + "_names.omni";
 
     {
         phmap::BinaryOutputArchive metadata_out(metadata_file.c_str());
@@ -70,6 +75,7 @@ void *ColoredKmers::save(const string &prefix) {
         phmap::BinaryOutputArchive kmers_out(kmers_file.c_str());
         this->kmers.dump(kmers_out);
     }
+    return out_dir;
 }
 
 ColoredKmers::ColoredKmers(const string &namesToGroupsFile, int kSize, int hashing_mode = 3) {
@@ -108,7 +114,7 @@ int ColoredKmers::size() {
     return this->kmers.size();
 }
 
-void ColoredKmers::setKmerColor(string & kmer_str, uint32_t & unitig_id) {
+void ColoredKmers::setKmerColor(string &kmer_str, uint32_t &unitig_id) {
     this->original_inserted_kmers++;
     this->kmers[this->KD->hash_kmer(kmer_str)] = this->unitigToComponent[unitig_id];
 }
