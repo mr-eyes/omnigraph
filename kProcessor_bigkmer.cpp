@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
     string filename = argv[1];
     string names_file = filename + ".names";
-    int chunk_size = 10000;
+    int chunk_size = 100;
     int kSize = 75;
     int hashing_mode = 3;
 
