@@ -23,6 +23,7 @@ include_directories (${kProcessor_INCLUDE_PATH})
 
 
 include_directories("${PROJECT_SOURCE_DIR}/includes")
+include_directories("${PROJECT_SOURCE_DIR}/lib/progressbar")
 include_directories("${PROJECT_SOURCE_DIR}/lib/inih")
 include_directories(${PROJECT_SOURCE_DIR}/lib/sqlite3pp/)
 include_directories(lib/gzstream)
