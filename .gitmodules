@@ -5,6 +5,3 @@
 [submodule "lib/inih"]
 	path = lib/inih
 	url = https://github.com/jtilly/inih.git
-[submodule "lib/kmerDecoder"]
-	path = lib/kmerDecoder
-	url = https://github.com/dib-lab/kmerDecoder
