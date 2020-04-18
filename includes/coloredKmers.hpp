@@ -39,7 +39,7 @@ public:
 
     void load_names(const string &names_tsv_path);
 
-    string save(const string &prefix);
+    void save(const string &prefix);
 
     int size();
 

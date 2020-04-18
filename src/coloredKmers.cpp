@@ -24,10 +24,23 @@ uint32_t ColoredKmers::getKmerColor(uint64_t &kmer_hash) {
         return got->second;
 }
 
+inline bool fileExists(const std::string &name) {
+    ifstream f(name.c_str());
+    return f.good();
+}
+
 ColoredKmers *ColoredKmers::load(const string &prefix) {
     const string &out_dir = prefix;
-    const string kmers_file = out_dir + '/' + prefix + "_kmers.omni";
-//    const string names_file = out_dir + '/' + prefix + "_names.omni";
+    string kmers_file = "";
+
+    if (fileExists(prefix + ".omni")){
+        kmers_file = prefix + ".omni";
+    }else if(fileExists(prefix)){
+        kmers_file = prefix;
+    }else{
+        cerr << prefix << " .omni file not found!";
+        exit(1);
+    }
 
     auto *cKmer = new ColoredKmers();
     {
@@ -57,16 +70,13 @@ inline string create_dir(const string &output_file, int serial) {
     return new_name;
 }
 
-string ColoredKmers::save(const string &prefix) {
+void ColoredKmers::save(const string &prefix) {
 
-    string out_dir = create_dir(prefix, 0);
-    const string kmers_file = out_dir + '/' + prefix + "_kmers.omni";
-
+    const string kmers_file = prefix + ".omni";
     {
         phmap::BinaryOutputArchive kmers_out(kmers_file.c_str());
         this->kmers.dump(kmers_out);
     }
-    return out_dir;
 }
 
 ColoredKmers::ColoredKmers(const string &namesToGroupsFile) {
