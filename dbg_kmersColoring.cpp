@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     int chunkSize = 100;
     int hashing_mode = 3;
 
-    auto *cDBG = new ColoredKmers(names_tsv, kSize, hashing_mode);
+    auto *cDBG = new ColoredKmers(names_tsv);
     int total_seqs = cDBG->get_seqs_number();
     int total_chunks = ceil((double) total_seqs / (double) chunkSize);
 

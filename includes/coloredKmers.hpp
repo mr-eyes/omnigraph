@@ -18,14 +18,14 @@ public:
     flat_hash_map<uint32_t, uint32_t> unitigToComponent;
     flat_hash_map<char, int> metadata = {{'h', 0},
                                          {'k', 0}};
-    int original_inserted_kmers;
-    kmerDecoder *KD;
+    int original_inserted_kmers = 0;
+    kmerDecoder *KD{};
 
     ColoredKmers() {
-
+        this->KD->setHashingMode(3);
     }
 
-    ColoredKmers(const string &namesToGroupsFile, int kSize, int hashing_mode);
+    ColoredKmers(const string &namesToGroupsFile);
 
     uint32_t getKmerColor(const string &kmer_str);
 

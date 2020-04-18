@@ -25,15 +25,12 @@ uint32_t ColoredKmers::getKmerColor(uint64_t &kmer_hash) {
 }
 
 ColoredKmers *ColoredKmers::load(const string &prefix) {
-    string out_dir = prefix;
-    const string metadata_file = out_dir + '/' + prefix + "_metadata.omni";
+    const string &out_dir = prefix;
     const string kmers_file = out_dir + '/' + prefix + "_kmers.omni";
 //    const string names_file = out_dir + '/' + prefix + "_names.omni";
 
     auto *cKmer = new ColoredKmers();
     {
-        phmap::BinaryInputArchive metadata_in(metadata_file.c_str());
-        cKmer->metadata.load(metadata_in);
         phmap::BinaryInputArchive kmers_in(kmers_file.c_str());
         cKmer->kmers.load(kmers_in);
     }
@@ -63,13 +60,7 @@ inline string create_dir(const string &output_file, int serial) {
 string ColoredKmers::save(const string &prefix) {
 
     string out_dir = create_dir(prefix, 0);
-    const string metadata_file = out_dir + '/' + prefix + "_metadata.omni";
     const string kmers_file = out_dir + '/' + prefix + "_kmers.omni";
-
-    {
-        phmap::BinaryOutputArchive metadata_out(metadata_file.c_str());
-        this->kmers.dump(metadata_out);
-    }
 
     {
         phmap::BinaryOutputArchive kmers_out(kmers_file.c_str());
@@ -78,14 +69,11 @@ string ColoredKmers::save(const string &prefix) {
     return out_dir;
 }
 
-ColoredKmers::ColoredKmers(const string &namesToGroupsFile, int kSize, int hashing_mode = 3) {
-    this->metadata['h'] = hashing_mode;
-    this->metadata['k'] = kSize;
-    this->KD = new Kmers(kSize, hashing_mode);
-    KD->setHashingMode(hashing_mode);
+ColoredKmers::ColoredKmers(const string &namesToGroupsFile) {
+    this->KD = new Kmers(75, 3);
+    KD->setHashingMode(3);
     // Loading names TSV file
     this->load_names(namesToGroupsFile);
-    this->original_inserted_kmers = 0;
 }
 
 
