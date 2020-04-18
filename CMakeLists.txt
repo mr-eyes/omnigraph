@@ -37,14 +37,6 @@ add_executable (query_2 second_query.cpp src/omnigraph.cpp src/sqliteManager.cpp
 target_link_libraries (query_2 kProcessor pthread z sqlite3)
 target_include_directories(query_2 INTERFACE ${kProcessor_INCLUDE_PATH})
 
-add_executable (manualIndex manual_indexing.cpp)
-target_link_libraries (manualIndex kProcessor pthread z sqlite3)
-target_include_directories(manualIndex INTERFACE ${kProcessor_INCLUDE_PATH})
-
-#add_executable (kp_large kProcessor_bigkmer.cpp)
-#target_link_libraries (kp_large kProcessor pthread z sqlite3)
-#target_include_directories(kp_large INTERFACE ${kProcessor_INCLUDE_PATH})
-
 add_executable (kmersColoring dbg_kmersColoring.cpp src/coloredKmers.cpp)
 target_link_libraries (kmersColoring kProcessor pthread z sqlite3)
 target_include_directories(kmersColoring INTERFACE ${kProcessor_INCLUDE_PATH})
