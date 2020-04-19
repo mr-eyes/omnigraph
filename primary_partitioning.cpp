@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     READ_2_KMERS->setHashingMode(hashing_mode);
 
     // Initializations
-    int no_chunks = ceil((double)no_of_sequences / (double)batchSize);
+    int no_chunks = ceil((double) no_of_sequences / (double) batchSize);
 
     progressbar bar(no_chunks);
     bar.set_done_char("█");
@@ -98,8 +98,12 @@ int main(int argc, char **argv) {
         // tuple<seq, matched, scenario, component, found_ratio>
         // read_id      R1orR2      found_ratio     scenario_id(3,4,5,6)
         while (seq1 != seq1_end && seq2 != seq2_end) {
-            tuple<string, bool, int, uint32_t, double> read_1_result = partitioner->classifyRead_withStats(kf, seq1->second, 1);
-            tuple<string, bool, int, uint32_t, double> read_2_result = partitioner->classifyRead_withStats(kf, seq2->second, 2);
+            tuple<string, bool, int, uint32_t, double> read_1_result = partitioner->classifyRead_withStats(kf,
+                                                                                                           seq1->second,
+                                                                                                           1);
+            tuple<string, bool, int, uint32_t, double> read_2_result = partitioner->classifyRead_withStats(kf,
+                                                                                                           seq2->second,
+                                                                                                           2);
 
             string read_1_constructedRead = get<0>(read_1_result);
 //            bool read_1_mapped_flag = get<1>(read_1_result);
@@ -121,8 +125,9 @@ int main(int argc, char **argv) {
 
         // Writing detailed stats
         // read_id      R1orR2      found_ratio     scenario_id(3,4,5,6)
-        for(const auto & row : detailed_chunk_stats){
-            string line = get<0>(row) + "\t" + to_string(get<1>(row)) + "\t" + to_string(get<2>(row)) + "\t" + to_string(get<3>(row)) + "\n" ;
+        for (const auto &row : detailed_chunk_stats) {
+            string line = get<0>(row) + "\t" + to_string(get<1>(row)) + "\t" + to_string(get<2>(row)) + "\t" +
+                          to_string(get<3>(row)) + "\n";
             detailed_stats_file->write(line);
         }
         detailed_chunk_stats.clear();
@@ -131,7 +136,8 @@ int main(int argc, char **argv) {
         bar.update();
     }
 
-
+    cout << endl << endl;
+    cout << "Summary report: " << endl << endl;
 
     // Printing a summary report
 
