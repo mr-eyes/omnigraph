@@ -2,7 +2,7 @@
 #! /bin/bash -login
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
-#SBATCH -p bmh
+#SBATCH -p bmm
 #SBATCH -J original_reduced_985_cDBG75
 #SBATCH --time=10:00:00
 #SBATCH -N 1
