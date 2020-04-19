@@ -37,22 +37,14 @@ add_executable (query_2 second_query.cpp src/omnigraph.cpp src/sqliteManager.cpp
 target_link_libraries (query_2 kProcessor pthread z sqlite3)
 target_include_directories(query_2 INTERFACE ${kProcessor_INCLUDE_PATH})
 
-add_executable (kmersColoring dbg_kmersColoring.cpp src/coloredKmers.cpp)
-target_link_libraries (kmersColoring kProcessor pthread z sqlite3)
-target_include_directories(kmersColoring INTERFACE ${kProcessor_INCLUDE_PATH})
-
 #add_executable (singleQuery single_query.cpp src/omnigraph.cpp)
 #target_link_libraries (singleQuery kProcessor pthread z sqlite3)
 #target_include_directories(singleQuery INTERFACE ${kProcessor_INCLUDE_PATH})
 
-#add_executable (tryGlob try_glob.cpp)
+add_executable (cDBG_labeling cDBG_labeling.cpp src/omnigraph.cpp)
+target_link_libraries (cDBG_labeling kProcessor pthread z)
+target_include_directories(cDBG_labeling INTERFACE ${kProcessor_INCLUDE_PATH})
 
-#add_executable (tryGz try_gz.cpp)
-#target_link_libraries (tryGz z)
-
-#add_executable (tryKD try_KD.cpp)
-
-#target_include_directories(tryKD INTERFACE ${kProcessor_INCLUDE_PATH})
-
-
-
+#add_executable (cDBG75MappingStats cDBG_labeling.cpp src/omnigraph.cpp)
+#target_link_libraries (cDBG75MappingStats kProcessor pthread z)
+#target_include_directories(cDBG75MappingStats INTERFACE ${kProcessor_INCLUDE_PATH})
