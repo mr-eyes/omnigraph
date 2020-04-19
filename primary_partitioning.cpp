@@ -7,8 +7,8 @@
 #include <cstdint>
 #include "omnigraph.hpp"
 #include <cassert>
-#include "progressbar.hpp"
-#include "tqdm.h"
+//#include "progressbar.hpp"
+//#include "tqdm.h"
 
 
 using namespace std;
@@ -73,7 +73,6 @@ int main(int argc, char **argv) {
     int no_chunks = ceil((double) no_of_sequences / (double) batchSize);
     int current_chunk = 0;
 
-    tqdm bar;
 
     // kProcessor Index Loading
     std::cerr << "Loading labeled cDBG ..." << std::endl;
@@ -84,9 +83,11 @@ int main(int argc, char **argv) {
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
+        cerr << "processing chunk: (" << ++current_chunk << ") / (" << no_chunks << ") ... ";
+        std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
         READ_1_KMERS->next_chunk();
         READ_2_KMERS->next_chunk();
-        ++current_chunk;
 
 
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1 = READ_1_KMERS->getKmers()->begin();
@@ -98,12 +99,8 @@ int main(int argc, char **argv) {
         // tuple<seq, matched, scenario, component, found_ratio>
         // read_id      R1orR2      found_ratio     scenario_id(3,4,5,6)
         while (seq1 != seq1_end && seq2 != seq2_end) {
-            tuple<string, bool, int, uint32_t, double> read_1_result = partitioner->classifyRead_withStats(kf,
-                                                                                                           seq1->second,
-                                                                                                           1);
-            tuple<string, bool, int, uint32_t, double> read_2_result = partitioner->classifyRead_withStats(kf,
-                                                                                                           seq2->second,
-                                                                                                           2);
+            tuple<string, bool, int, uint32_t, double> read_1_result = partitioner->classifyRead_withStats(kf,seq1->second,1);
+            tuple<string, bool, int, uint32_t, double> read_2_result = partitioner->classifyRead_withStats(kf,seq2->second,2);
 
             string read_1_constructedRead = get<0>(read_1_result);
 //            bool read_1_mapped_flag = get<1>(read_1_result);
@@ -133,10 +130,17 @@ int main(int argc, char **argv) {
         detailed_chunk_stats.clear();
 
 
-        bar.progress(current_chunk, no_chunks);
+        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+        auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
+        long hr = milli / 3600000;
+        milli = milli - 3600000 * hr;
+        long min = milli / 60000;
+        milli = milli - 60000 * min;
+        long sec = milli / 1000;
+        milli = milli - 1000 * sec;
+        cerr << "Done in: ";
+        cout << min << ":" << sec << ":" << milli << endl;
     }
-
-    bar.finish();
 
     cout << endl << endl;
     cout << "Summary report: " << endl << endl;
