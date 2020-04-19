@@ -7,7 +7,7 @@
 #include <cstdint>
 #include "omnigraph.hpp"
 #include <cassert>
-#include "ProgressBar.hpp"
+#include "progressbar.hpp"
 
 
 using namespace std;
@@ -41,10 +41,12 @@ int main(int argc, char **argv) {
     int batchSize = 10000;
     int kSize = 75;
     int no_of_sequences = 67954363;
+    int hashing_mode = 3;
 
     // Temporary solution for the Farm IO
     if (argc < 4) {
-        cerr << "run: ./primaryPartitioning <index_prefix> <PE_R1> <PE_R2> <out_prefix>";
+        cerr << "run: ./primaryPartitioning <index_prefix> <PE_R1> <PE_R2> <out_prefix>" << endl;
+        exit(1);
     } else {
         index_prefix = argv[1];
         PE_1_reads_file = argv[2];
@@ -63,11 +65,15 @@ int main(int argc, char **argv) {
     kmerDecoder *READ_1_KMERS = new Kmers(PE_1_reads_file, batchSize, kSize);
     kmerDecoder *READ_2_KMERS = new Kmers(PE_2_reads_file, batchSize, kSize);
 
+    READ_1_KMERS->setHashingMode(hashing_mode);
+    READ_2_KMERS->setHashingMode(hashing_mode);
+
     // Initializations
     int no_chunks = ceil((double)no_of_sequences / (double)batchSize);
-    int Reads_chunks_counter = 0;
 
-    progresscpp::ProgressBar progressBar(no_chunks, 100);
+    progressbar bar(no_chunks);
+    bar.set_done_char("█");
+
 
 
     // kProcessor Index Loading
@@ -78,7 +84,6 @@ int main(int argc, char **argv) {
 
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
-        ++progressBar;
 
         READ_1_KMERS->next_chunk();
         READ_2_KMERS->next_chunk();
@@ -123,9 +128,8 @@ int main(int argc, char **argv) {
         detailed_chunk_stats.clear();
 
 
-        progressBar.display();
+        bar.update();
     }
-    progressBar.done();
 
 
 
