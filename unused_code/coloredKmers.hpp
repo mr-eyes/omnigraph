@@ -1,8 +1,8 @@
 #ifndef OMNIGRAPH_COLOREDKMERS_HPP
 #define OMNIGRAPH_COLOREDKMERS_HPP
 
+#include "kDataFrame.hpp"
 #include <parallel_hashmap/phmap.h>
-#include <kmerDecoder.hpp>
 #include <iostream>
 #include <cstdint>
 #include <string>
