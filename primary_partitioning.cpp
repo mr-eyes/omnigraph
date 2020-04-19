@@ -156,6 +156,7 @@ int main(int argc, char **argv) {
     delete kf;
     delete READ_1_KMERS;
     delete READ_2_KMERS;
+    detailed_stats_file->close();
 
     return 0;
 }
