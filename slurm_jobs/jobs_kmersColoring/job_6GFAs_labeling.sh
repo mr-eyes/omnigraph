@@ -51,7 +51,7 @@ reduced_aggressive=reduced_985_aggressive_dislinked_cDBG75
 
 # Copy required files from the original directory to the scratch directory
 
-for unitigs_fasta in ${original} ${mild} ${aggressive} ${reduced_original} ${reduced_mild} ${reduced_aggressive};
+for unitigs_fasta in ${reduced_original} ${reduced_mild} ${reduced_aggressive}; # ${original} ${mild} ${aggressive} ;
 do
     echo -e "copying $unitigs_fasta ... \n";
     cp /home/mhussien/omnigraph/data/cDBG75/six_gfas/${unitigs_fasta}.unitigs.fa ./;
@@ -67,7 +67,7 @@ K_SIZE=75
 
 ############################## (1) START Labeling ####################################
 
-for unitigs_fasta in ${original} ${mild} ${aggressive} ${reduced_original} ${reduced_mild} ${reduced_aggressive};
+for unitigs_fasta in ${reduced_original} ${reduced_mild} ${reduced_aggressive}; # ${original} ${mild} ${aggressive} ;
 do
     echo -e "labeling $unitigs_fasta ... \n";
     /usr/bin/time -v /home/mhussien/omnigraph/build/cDBG_labeling ${unitigs_fasta}.unitigs.fa ${unitigs_fasta}.unitigs.fa.names.tsv ${unitigs_fasta}
