@@ -24,6 +24,7 @@ include_directories (${kProcessor_INCLUDE_PATH})
 
 include_directories("${PROJECT_SOURCE_DIR}/includes")
 include_directories("${PROJECT_SOURCE_DIR}/lib/progressbar")
+include_directories("${PROJECT_SOURCE_DIR}/lib/progressBar2") # This one with countdown
 include_directories("${PROJECT_SOURCE_DIR}/lib/inih")
 include_directories(${PROJECT_SOURCE_DIR}/lib/sqlite3pp/)
 include_directories(lib/gzstream)
@@ -45,6 +46,6 @@ add_executable (cDBG_labeling cDBG_labeling.cpp src/omnigraph.cpp)
 target_link_libraries (cDBG_labeling kProcessor pthread z)
 target_include_directories(cDBG_labeling INTERFACE ${kProcessor_INCLUDE_PATH})
 
-#add_executable (cDBG75MappingStats cDBG_labeling.cpp src/omnigraph.cpp)
-#target_link_libraries (cDBG75MappingStats kProcessor pthread z)
-#target_include_directories(cDBG75MappingStats INTERFACE ${kProcessor_INCLUDE_PATH})
+add_executable (primaryPartitioning primary_partitioning.cpp src/omnigraph.cpp)
+target_link_libraries (primaryPartitioning kProcessor pthread z)
+target_include_directories(primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
