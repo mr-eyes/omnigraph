@@ -8,6 +8,7 @@
 #include "omnigraph.hpp"
 #include <cassert>
 #include "progressbar.hpp"
+#include "tqdm.h"
 
 
 using namespace std;
@@ -70,11 +71,9 @@ int main(int argc, char **argv) {
 
     // Initializations
     int no_chunks = ceil((double) no_of_sequences / (double) batchSize);
+    int current_chunk = 0;
 
-    progressbar bar(no_chunks);
-    bar.set_done_char("█");
-
-
+    tqdm bar;
 
     // kProcessor Index Loading
     std::cerr << "Loading labeled cDBG ..." << std::endl;
@@ -87,6 +86,7 @@ int main(int argc, char **argv) {
 
         READ_1_KMERS->next_chunk();
         READ_2_KMERS->next_chunk();
+        ++current_chunk;
 
 
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1 = READ_1_KMERS->getKmers()->begin();
@@ -133,8 +133,10 @@ int main(int argc, char **argv) {
         detailed_chunk_stats.clear();
 
 
-        bar.update();
+        bar.progress(current_chunk, no_chunks);
     }
+
+    bar.finish();
 
     cout << endl << endl;
     cout << "Summary report: " << endl << endl;
