@@ -56,13 +56,7 @@ public:
     }
 
     tuple<string, bool, int, uint64_t> classifyRead(kDataFrame *kf, std::vector<kmer_row> &kmers, int PE);
+    tuple<string, bool, int, uint32_t, double> classifyRead_withStats(kDataFrame *kf, std::vector<kmer_row> &kmers, int PE);
 
     static string kmers_to_seq(vector<kmer_row> &kmers);
 };
-
-
-namespace omniDB{
-
-
-
-}
