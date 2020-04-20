@@ -117,7 +117,23 @@ Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
 
 ### 4. Reduced original @ 98.5
 ```text
-still running
+Summary report: 
+
+Paired End File: 1 | mapped_reads  %14.6339
+Scenario (1) : Count: 5465615 | Mapped: from matching the first and last kmers only.
+Scenario (2) : Count: 2541167 | Unmapped: Both terminal kmers matched but on different components.
+Scenario (3) : Count: 54074538 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
+Scenario (4) : Count: 1394257 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (5) : Count: 4478786 | Mapped: Partial match and read is trimmed.
+Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
+---------------------------------
+Paired End File: 2 | mapped_reads  %13.9033
+Scenario (1) : Count: 5006152 | Mapped: from matching the first and last kmers only.
+Scenario (2) : Count: 2374020 | Unmapped: Both terminal kmers matched but on different components.
+Scenario (3) : Count: 54751787 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers unmatched.
+Scenario (4) : Count: 1380689 | Unmapped: One or both of the terminal kmers not matched & > %50 of kmers matched with colors intersecton > 1.
+Scenario (5) : Count: 4441715 | Mapped: Partial match and read is trimmed.
+Scenario (6) : Count: 0 | Unmapped: There's no single matched kmer.
 ```
 
 
