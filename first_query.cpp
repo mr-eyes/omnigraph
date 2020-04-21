@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     // Instantiations
     Omnigraph *first_query = new Omnigraph();
     SQLiteManager *SQL = new SQLiteManager(sqlite_db);
-    SQL->create_reads_table();
+    SQL->create_reads_table(first_query->partitioning_mode);
     kmerDecoder *READ_1_KMERS = new Kmers(PE_1_reads_file, batchSize, kSize);
     kmerDecoder *READ_2_KMERS = new Kmers(PE_2_reads_file, batchSize, kSize);
 
