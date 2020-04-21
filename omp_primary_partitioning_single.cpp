@@ -76,35 +76,41 @@ int main(int argc, char **argv) {
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2 = READ_2_KMERS->getKmers()->begin();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1_end = READ_1_KMERS->getKmers()->end();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2_end = READ_2_KMERS->getKmers()->end();
+        auto seq1_max = std::distance(seq1, seq1_end);
+        auto seq2_max = std::distance(seq2, seq2_end);
 
 
         vector<tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
-        auto max = std::distance(seq1, seq1_end);
-
-        for(int i=0; i < max; i++){
-            tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
-            string R1_constructedRead = get<0>(read_1_result);
-            uint32_t R1_connectedComponent = get<3>(read_1_result);
-            R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
-            seq1++;
-        }
-
-//        for (; seq1 != seq1_end; seq1++) {
-//            tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
-//            string R1_constructedRead = get<0>(read_1_result);
-//            uint32_t R1_connectedComponent = get<3>(read_1_result);
-//            R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
-//        }
-
-
         vector<tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
-        for (; seq2 != seq2_end; seq2++) {
-            tuple<string, bool, int, uint64_t> read_2_result = originalCompsQuery->classifyRead(kf, seq2->second, 2);
-            string R2_constructedRead = get<0>(read_2_result);
-            uint32_t R2_connectedComponent = get<3>(read_2_result);
-            R2_sqlite_chunk.emplace_back(make_tuple(R2_constructedRead, R2_connectedComponent));
-        }
 
+#pragma omp parallel sections num_threads( 2 ) default(shared)
+        {
+
+#pragma omp section
+#pragma omp parallel for num_threads( seq1_max )
+            for (int i = 0; i < seq1_max; i++) {
+                tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second,
+                                                                                                    1);
+                string R1_constructedRead = get<0>(read_1_result);
+                uint32_t R1_connectedComponent = get<3>(read_1_result);
+                R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
+                seq1++;
+            }
+
+
+
+#pragma omp section
+#pragma omp parallel for num_threads( seq2_max )
+            for (int i = 0; i < seq2_max; i++) {
+                tuple<string, bool, int, uint64_t> read_2_result = originalCompsQuery->classifyRead(kf, seq2->second,
+                                                                                                    2);
+                string R2_constructedRead = get<0>(read_2_result);
+                uint32_t R2_connectedComponent = get<3>(read_2_result);
+                R2_sqlite_chunk.emplace_back(make_tuple(R2_constructedRead, R2_connectedComponent));
+                seq2++;
+            }
+
+        }
 
         std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
         auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
