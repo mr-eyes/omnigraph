@@ -47,6 +47,12 @@ add_executable (cDBG_labeling cDBG_labeling.cpp src/omnigraph.cpp)
 target_link_libraries (cDBG_labeling kProcessor pthread z)
 target_include_directories(cDBG_labeling INTERFACE ${kProcessor_INCLUDE_PATH})
 
-add_executable (primaryPartitioning primary_partitioning.cpp src/omnigraph.cpp)
-target_link_libraries (primaryPartitioning kProcessor pthread z)
-target_include_directories(primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
+add_executable (allKmersMatching_primaryPartitioning allKmersMatching_primary_partitioning.cpp src/omnigraph.cpp)
+target_link_libraries (allKmersMatching_primaryPartitioning kProcessor pthread z)
+target_include_directories(allKmersMatching_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
+
+add_executable (single_primaryPartitioning primary_partitioning_single.cpp src/omnigraph.cpp)
+target_link_libraries (single_primaryPartitioning kProcessor pthread z)
+target_include_directories(single_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
+
+
