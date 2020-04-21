@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
         vector<tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
         vector<tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
 
-#pragma omp parallel sections num_threads( 2 ) default(shared)
+#pragma omp parallel sections num_threads( 2 ) shared(R1_sqlite_chunk, R2_sqlite_chunk, seq1_max, seq2_max)
         {
 
 #pragma omp section
