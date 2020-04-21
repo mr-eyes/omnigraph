@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
         cerr << "Done in: ";
-        cout << min << ":" << sec << ":" << milli << endl;
+        cerr << min << ":" << sec << ":" << milli << endl;
 
     }
 
