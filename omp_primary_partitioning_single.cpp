@@ -144,7 +144,10 @@ int main(int argc, char **argv) {
                 }
 
                 sqlite3_reset(stmt);
+                R1_it ++;
+                R2_it ++;
             }
+
             sqlite3_exec(SQL->db.db_, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);
             sqlite3_finalize(stmt);
 
