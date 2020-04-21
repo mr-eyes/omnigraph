@@ -1,6 +1,6 @@
 #include "omnigraph.hpp"
 
-tuple<string, bool, int, uint64_t>
+tuple<string, bool, int, uint32_t>
 Omnigraph::classifyRead(kDataFrame *kf, std::vector<kmer_row> &kmers, int PE) {
 
     /*
@@ -15,7 +15,7 @@ Omnigraph::classifyRead(kDataFrame *kf, std::vector<kmer_row> &kmers, int PE) {
 
     string constructed_read;
     int scenario = 0;
-    int connected_component;
+    uint32_t connected_component;
     uint64_t color1 = kf->getCount(kmers.front().hash);
     uint64_t color2 = kf->getCount(kmers.back().hash);
 
@@ -47,7 +47,7 @@ Omnigraph::classifyRead(kDataFrame *kf, std::vector<kmer_row> &kmers, int PE) {
 
         // Get all the colors
         for (const auto &kmer: kmers) {
-            uint64_t color = kf->getCount(kmer.hash); // This line is a landmine, take care.
+            uint64_t color = kf->getCount(kmer.hash);
             if (color != 0) {
                 found_count++;
             }

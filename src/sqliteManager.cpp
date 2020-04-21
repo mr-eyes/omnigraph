@@ -11,7 +11,9 @@ int SQLiteManager::callback(void *NotUsed, int argc, char **argv, char **azColNa
     return 0;
 }
 
-void SQLiteManager::create_reads_table() {
+void SQLiteManager::create_reads_table(int partitioning_mode) {
+    // 1: Single iteration
+    // 2: Hierarchical
 
     string _sqlite_checkTable = "SELECT ID FROM reads LIMIT 1";
     this->rc = sqlite3_exec(this->db.db_, _sqlite_checkTable.c_str(), this->callback, 0, &this->zErrMsg);
@@ -21,17 +23,36 @@ void SQLiteManager::create_reads_table() {
         fprintf(stderr, "`reads` table was not found.\n");
         fprintf(stderr, "Creating `reads` table...\n");
 
-        const char *_sqlite_create_table = "CREATE TABLE IF NOT EXISTS `reads` ("
-                                           "`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
-                                           "`PE_seq1`	TEXT,"
-                                           "`PE_seq2`	TEXT,"
-                                           "`seq1_collective_component`	INTEGER,"
-                                           "`seq2_collective_component`	INTEGER,"
-                                           "`seq1_original_component`	INTEGER,"
-                                           "`seq2_original_component`	INTEGER"
-                                           ");";
+        const char *_sqlite_create_table;
+        char *_sqlite_create_index;
 
-        char *_sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_collective_component);";
+        // By Default partitioning_mode = 1
+
+
+        _sqlite_create_table = "CREATE TABLE IF NOT EXISTS `reads` ("
+                               "`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                               "`PE_seq1`	TEXT,"
+                               "`PE_seq2`	TEXT,"
+                               "`seq1_original_component`	INTEGER,"
+                               "`seq2_original_component`	INTEGER"
+                               ");";
+
+        _sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_original_component);";
+
+        if (partitioning_mode == 2) {
+            _sqlite_create_table = "CREATE TABLE IF NOT EXISTS `reads` ("
+                                   "`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
+                                   "`PE_seq1`	TEXT,"
+                                   "`PE_seq2`	TEXT,"
+                                   "`seq1_collective_component`	INTEGER,"
+                                   "`seq2_collective_component`	INTEGER,"
+                                   "`seq1_original_component`	INTEGER,"
+                                   "`seq2_original_component`	INTEGER"
+                                   ");";
+            _sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_collective_component);";
+
+        }
+
 
         this->rc = sqlite3_exec(this->db.db_, _sqlite_create_table, this->callback, 0, &this->zErrMsg);
         if (this->rc != SQLITE_OK) {
@@ -70,7 +91,7 @@ bool SQLiteManager::check_reads_table() {
     return this->rc == 0;
 }
 
-SQLiteManager::SQLiteManager(const string& db_file) {
+SQLiteManager::SQLiteManager(const string &db_file) {
     this->db = sqlite3pp::database(db_file.c_str());
 }
 
