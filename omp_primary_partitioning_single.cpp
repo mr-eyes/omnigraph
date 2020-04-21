@@ -8,7 +8,6 @@
 #include "omnigraph.hpp"
 #include "assert.h"
 #include <omp.h>
-#include <unistd.h>
 
 using namespace std;
 
@@ -60,8 +59,6 @@ int main(int argc, char **argv) {
     assert(kSize == (int) kf->getkSize());
     std::cerr << "Labeled cDBG loaded successfully ..." << std::endl;
 
-    omp_set_nested(1);
-
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
@@ -76,40 +73,40 @@ int main(int argc, char **argv) {
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2 = READ_2_KMERS->getKmers()->begin();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1_end = READ_1_KMERS->getKmers()->end();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2_end = READ_2_KMERS->getKmers()->end();
-        auto seq1_max = std::distance(seq1, seq1_end);
-        auto seq2_max = std::distance(seq2, seq2_end);
 
+        vector <tuple<string, string, uint32_t, uint32_t>> sqlite_chunk; // Buffer for holding Sqlite rows
 
-        vector<tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
-        vector<tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
+        tuple<string, bool, int, uint64_t> read_1_result;
+        tuple<string, bool, int, uint64_t> read_2_result;
 
-#pragma omp parallel sections num_threads( 2 ) shared(R1_sqlite_chunk, R2_sqlite_chunk, seq1_max, seq2_max)
-        {
-
-#pragma omp section
-#pragma omp parallel for num_threads( seq1_max )
-            for (int i = 0; i < seq1_max; i++) {
-                tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second,
+        while (seq1 != seq1_end && seq2 != seq2_end) {
+#pragma omp parallel
+            {
+#pragma omp task
+                read_1_result = originalCompsQuery->classifyRead(kf, seq1->second,
                                                                                                     1);
-                string R1_constructedRead = get<0>(read_1_result);
-                uint32_t R1_connectedComponent = get<3>(read_1_result);
-                R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
-                seq1++;
-            }
 
-
-
-#pragma omp section
-#pragma omp parallel for num_threads( seq2_max )
-            for (int i = 0; i < seq2_max; i++) {
-                tuple<string, bool, int, uint64_t> read_2_result = originalCompsQuery->classifyRead(kf, seq2->second,
+#pragma omp task
+                read_2_result = originalCompsQuery->classifyRead(kf, seq2->second,
                                                                                                     2);
-                string R2_constructedRead = get<0>(read_2_result);
-                uint32_t R2_connectedComponent = get<3>(read_2_result);
-                R2_sqlite_chunk.emplace_back(make_tuple(R2_constructedRead, R2_connectedComponent));
-                seq2++;
             }
 
+            string R1_constructedRead = get<0>(read_1_result);
+//            bool read_1_mapped_flag = get<1>(read_1_result);
+            uint32_t R1_connectedComponent = get<3>(read_1_result);
+
+            string R2_constructedRead = get<0>(read_2_result);
+//            bool read_2_mapped_flag = get<1>(read_2_result);
+            uint32_t R2_connectedComponent = get<3>(read_2_result);
+
+//            SQL->insert_PE(R1_constructedRead, R2_constructedRead, R1_connectedComponent,
+//                           R2_connectedComponent);
+
+            sqlite_chunk.emplace_back(
+                    make_tuple(R1_constructedRead, R2_constructedRead, R1_connectedComponent, R2_connectedComponent));
+
+            seq1++;
+            seq2++;
         }
 
         std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
@@ -140,21 +137,16 @@ int main(int argc, char **argv) {
         SQL->rc = sqlite3_prepare(SQL->db.db_, szSQL, -1, &stmt, nullptr);
 
 
-        auto R1_it = R1_sqlite_chunk.begin();
-        auto R2_it = R2_sqlite_chunk.begin();
-
-
         if (SQL->rc == SQLITE_OK) {
 
-            while (R1_it != R1_sqlite_chunk.end() && R2_it != R2_sqlite_chunk.end()) {
-                char const *R1_seq = get<0>(*R1_it).c_str();
-                char const *R2_seq = get<0>(*R2_it).c_str();
+            for (auto &row : sqlite_chunk) {
+                char const *R1_seq = get<0>(row).c_str();
+                char const *R2_seq = get<1>(row).c_str();
 
                 sqlite3_bind_text(stmt, 1, R1_seq, strlen(R1_seq), nullptr);
                 sqlite3_bind_text(stmt, 2, R2_seq, strlen(R2_seq), nullptr);
-
-                sqlite3_bind_int64(stmt, 3, get<1>(*R1_it));
-                sqlite3_bind_int64(stmt, 4, get<1>(*R2_it));
+                sqlite3_bind_int64(stmt, 3, get<2>(row));
+                sqlite3_bind_int64(stmt, 4, get<3>(row));
 
                 int retVal = sqlite3_step(stmt);
                 if (retVal != SQLITE_DONE) {
@@ -162,10 +154,7 @@ int main(int argc, char **argv) {
                 }
 
                 sqlite3_reset(stmt);
-                R1_it++;
-                R2_it++;
             }
-
             sqlite3_exec(SQL->db.db_, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);
             sqlite3_finalize(stmt);
 
