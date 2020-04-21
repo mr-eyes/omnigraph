@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
         long sec = milli / 1000;
         milli = milli - 1000 * sec;
         cerr << "Done in: ";
-        cerr << min << ":" << sec << ":" << milli << " | disk_writing ... ";
+        cerr << min << ":" << sec << ":" << milli;
 
 
         // --------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ int main(int argc, char **argv) {
         milli = milli - 60000 * min;
         sec = milli / 1000;
         milli = milli - 1000 * sec;
-        cerr << "inserted in: ";
+        cerr << " | inserted in: ";
         cerr << min << ":" << sec << ":" << milli;
 
         // Calculating Total Time
