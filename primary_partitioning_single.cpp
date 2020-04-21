@@ -1,14 +1,56 @@
 #include <iostream>
 #include <kDataFrame.hpp>
 #include <string>
+#include <utility>
 #include <vector>
 #include <cstdint>
 #include <firstQuery.hpp>
 #include "INIReader.h"
 #include "omnigraph.hpp"
 #include "assert.h"
+#include "parallel_hashmap/phmap_dump.h"
 
 using namespace std;
+
+
+class pairs_count {
+public:
+    flat_hash_map <tuple<uint32_t, uint32_t>, uint32_t> counts;
+    string prefix;
+
+    explicit pairs_count(string prefix) {
+        this->prefix = std::move(prefix);
+    }
+
+    void insert_pair(uint32_t &comp1, uint32_t &comp2) {
+        this->counts[make_tuple(std::min(comp1, comp1), std::max(comp1, comp1))]++;
+    }
+
+//    void binaryDump() {
+//
+//        const string counts_map = this->prefix + "pairsCount.omni";
+//
+//        phmap::BinaryOutputArchive pairsCountsOUT(counts_map.c_str());
+//        this->counts.dump(pairsCountsOUT);
+//
+//    }
+
+    void tsv_export() {
+        ofstream tsvWriter(this->prefix + "_pairsCount.tsv");
+
+        for (const auto &pair : this->counts) {
+            string line = to_string(get<0>(pair.first)) + '\t';
+            line.append(to_string(get<1>(pair.first)) + '\t');
+            line.append(to_string(pair.second) + '\n');
+            tsvWriter << line;
+        }
+
+        tsvWriter.close();
+
+    }
+
+};
+
 
 int main(int argc, char **argv) {
 
@@ -58,6 +100,7 @@ int main(int argc, char **argv) {
     assert(kSize == (int) kf->getkSize());
     std::cerr << "Labeled cDBG loaded successfully ..." << std::endl;
 
+    auto *pairsCounter = new pairs_count(out_prefix);
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
@@ -87,8 +130,11 @@ int main(int argc, char **argv) {
 //            bool read_2_mapped_flag = get<1>(read_2_result);
             uint32_t R2_connectedComponent = get<3>(read_2_result);
 
-//            SQL->insert_PE(R1_constructedRead, R2_constructedRead, R1_connectedComponent,
-//                           R2_connectedComponent);
+            // Pairs counter
+            if ((get<1>(read_1_result) && get<1>(read_2_result)) && (get<1>(read_1_result) != get<1>(read_2_result))) {
+                pairsCounter->insert_pair(R1_connectedComponent, R2_connectedComponent);
+            }
+
 
             sqlite_chunk.emplace_back(
                     make_tuple(R1_constructedRead, R2_constructedRead, R1_connectedComponent, R2_connectedComponent));
@@ -183,6 +229,19 @@ int main(int argc, char **argv) {
 
     }
 
+
+    // --------------------------------------------------------------------------------
+    //                                Dumping pairCounts TSV                          |
+    // --------------------------------------------------------------------------------
+
+    cerr << "Dumping pairCounter ..." << endl;
+    pairsCounter->tsv_export();
+//    pairsCounter->binaryDump();
+
+
+    // --------------------------------------------------------------------------------
+    //                              Dumping pairCounts TSV Done                       |
+    // --------------------------------------------------------------------------------
 
 
     // Printing a summary report
