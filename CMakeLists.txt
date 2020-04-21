@@ -55,9 +55,3 @@ add_executable (single_primaryPartitioning primary_partitioning_single.cpp src/o
 target_link_libraries (single_primaryPartitioning kProcessor pthread z sqlite3)
 target_include_directories(single_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
 
-
-add_executable (omp_single_primaryPartitioning omp_primary_partitioning_single.cpp src/omnigraph.cpp src/sqliteManager.cpp)
-target_link_libraries (omp_single_primaryPartitioning kProcessor pthread z sqlite3)
-target_include_directories(omp_single_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
-
-
