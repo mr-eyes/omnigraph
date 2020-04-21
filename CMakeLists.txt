@@ -51,7 +51,7 @@ add_executable (allKmersMatching_primaryPartitioning allKmersMatching_primary_pa
 target_link_libraries (allKmersMatching_primaryPartitioning kProcessor pthread z)
 target_include_directories(allKmersMatching_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
 
-add_executable (single_primaryPartitioning primary_partitioning_single.cpp src/omnigraph.cpp)
+add_executable (single_primaryPartitioning primary_partitioning_single.cpp src/omnigraph.cpp src/sqliteManager.cpp)
 target_link_libraries (single_primaryPartitioning kProcessor pthread z)
 target_include_directories(single_primaryPartitioning INTERFACE ${kProcessor_INCLUDE_PATH})
 
