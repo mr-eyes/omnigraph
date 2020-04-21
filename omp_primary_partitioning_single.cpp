@@ -7,6 +7,8 @@
 #include "INIReader.h"
 #include "omnigraph.hpp"
 #include "assert.h"
+#include <omp.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -58,6 +60,8 @@ int main(int argc, char **argv) {
     assert(kSize == (int) kf->getkSize());
     std::cerr << "Labeled cDBG loaded successfully ..." << std::endl;
 
+    omp_set_nested(1);
+
 
     while (!READ_1_KMERS->end() && !READ_2_KMERS->end()) {
 
@@ -74,18 +78,18 @@ int main(int argc, char **argv) {
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2_end = READ_2_KMERS->getKmers()->end();
 
 
-        vector <tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
-        while(seq1 != seq1_end){
+        vector<tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
+
+        for (; seq1 != seq1_end; seq1++) {
             tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
             string R1_constructedRead = get<0>(read_1_result);
             uint32_t R1_connectedComponent = get<3>(read_1_result);
             R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
-            seq1++;
         }
 
 
-        vector <tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
-        while(seq2 != seq2_end){
+        vector<tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
+        while (seq2 != seq2_end) {
             tuple<string, bool, int, uint64_t> read_2_result = originalCompsQuery->classifyRead(kf, seq2->second, 2);
             string R2_constructedRead = get<0>(read_2_result);
             uint32_t R2_connectedComponent = get<3>(read_2_result);
@@ -128,15 +132,15 @@ int main(int argc, char **argv) {
 
         if (SQL->rc == SQLITE_OK) {
 
-            while(R1_it != R1_sqlite_chunk.end() && R2_it != R2_sqlite_chunk.end()) {
-                char const *R1_seq = get<0>(* R1_it).c_str();
-                char const *R2_seq = get<0>(* R2_it).c_str();
+            while (R1_it != R1_sqlite_chunk.end() && R2_it != R2_sqlite_chunk.end()) {
+                char const *R1_seq = get<0>(*R1_it).c_str();
+                char const *R2_seq = get<0>(*R2_it).c_str();
 
                 sqlite3_bind_text(stmt, 1, R1_seq, strlen(R1_seq), nullptr);
                 sqlite3_bind_text(stmt, 2, R2_seq, strlen(R2_seq), nullptr);
 
-                sqlite3_bind_int64(stmt, 3, get<1>(* R1_it));
-                sqlite3_bind_int64(stmt, 4, get<1>(* R2_it));
+                sqlite3_bind_int64(stmt, 3, get<1>(*R1_it));
+                sqlite3_bind_int64(stmt, 4, get<1>(*R2_it));
 
                 int retVal = sqlite3_step(stmt);
                 if (retVal != SQLITE_DONE) {
@@ -144,8 +148,8 @@ int main(int argc, char **argv) {
                 }
 
                 sqlite3_reset(stmt);
-                R1_it ++;
-                R2_it ++;
+                R1_it++;
+                R2_it++;
             }
 
             sqlite3_exec(SQL->db.db_, "COMMIT TRANSACTION", NULL, NULL, &errorMessage);
