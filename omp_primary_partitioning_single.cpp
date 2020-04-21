@@ -79,22 +79,30 @@ int main(int argc, char **argv) {
 
 
         vector<tuple<string, uint32_t>> R1_sqlite_chunk; // Buffer for holding Sqlite rows
+        auto max = std::distance(seq1, seq1_end);
 
-        for (; seq1 != seq1_end; seq1++) {
+        for(int i=0; i < max; i++){
             tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
             string R1_constructedRead = get<0>(read_1_result);
             uint32_t R1_connectedComponent = get<3>(read_1_result);
             R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
+            seq1++;
         }
+
+//        for (; seq1 != seq1_end; seq1++) {
+//            tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
+//            string R1_constructedRead = get<0>(read_1_result);
+//            uint32_t R1_connectedComponent = get<3>(read_1_result);
+//            R1_sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R1_connectedComponent));
+//        }
 
 
         vector<tuple<string, uint32_t>> R2_sqlite_chunk; // Buffer for holding Sqlite rows
-        while (seq2 != seq2_end) {
+        for (; seq2 != seq2_end; seq2++) {
             tuple<string, bool, int, uint64_t> read_2_result = originalCompsQuery->classifyRead(kf, seq2->second, 2);
             string R2_constructedRead = get<0>(read_2_result);
             uint32_t R2_connectedComponent = get<3>(read_2_result);
             R2_sqlite_chunk.emplace_back(make_tuple(R2_constructedRead, R2_connectedComponent));
-            seq2++;
         }
 
 
