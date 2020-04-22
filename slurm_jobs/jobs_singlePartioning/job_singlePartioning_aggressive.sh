@@ -56,8 +56,8 @@ R2=SRR11015356_2.fasta
 /usr/bin/time -v /home/mhussien/omnigraph/build/single_primaryPartitioning ${INDEX_PREFIX} ${R1} ${R2} ${OUT_PREFIX}
 
 # Remove reads
-rm ${R1}
-rm ${R1}
+rm -rf ${R1}
+rm -rf ${R2}
 
 ############################## DONE Partitioning #######################################
 
