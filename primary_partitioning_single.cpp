@@ -7,7 +7,7 @@
 #include <firstQuery.hpp>
 #include "INIReader.h"
 #include "omnigraph.hpp"
-#include "assert.h"
+#include <cassert>
 #include "parallel_hashmap/phmap_dump.h"
 
 using namespace std;
@@ -15,7 +15,7 @@ using namespace std;
 
 class pairs_count {
 public:
-    flat_hash_map <tuple<uint32_t, uint32_t>, uint32_t> counts;
+    flat_hash_map<pair<uint32_t, uint32_t>, uint32_t> counts;
     string prefix;
 
     explicit pairs_count(string prefix) {
@@ -23,22 +23,14 @@ public:
     }
 
     void insert_pair(uint32_t &comp1, uint32_t &comp2) {
-        this->counts[make_tuple(std::min(comp1, comp1), std::max(comp1, comp1))]++;
+        this->counts[make_pair(std::min(comp1, comp2), std::max(comp1, comp2))]++;
     }
 
-//    void binaryDump() {
-//
-//        const string counts_map = this->prefix + "pairsCount.omni";
-//
-//        phmap::BinaryOutputArchive pairsCountsOUT(counts_map.c_str());
-//        this->counts.dump(pairsCountsOUT);
-//
-//    }
 
     void tsv_export() {
         ofstream tsvWriter(this->prefix + "_pairsCount.tsv");
-
-        for (const auto &pair : this->counts) {
+        tsvWriter << "comp1\tcomp2\tcount\n";
+        for (auto &pair : this->counts) {
             string line = to_string(get<0>(pair.first)) + '\t';
             line.append(to_string(get<1>(pair.first)) + '\t');
             line.append(to_string(pair.second) + '\n');
@@ -53,6 +45,8 @@ public:
 
 
 int main(int argc, char **argv) {
+
+
 
     // Index prefix
     // Read 1
@@ -79,8 +73,8 @@ int main(int argc, char **argv) {
     cerr << "Processing: \nR1: " << PE_1_reads_file << "\nR2: " << PE_2_reads_file << endl;
 
     // Instantiations
-    Omnigraph *originalCompsQuery = new Omnigraph();
-    SQLiteManager *SQL = new SQLiteManager(sqlite_db);
+    auto *originalCompsQuery = new Omnigraph();
+    auto *SQL = new SQLiteManager(sqlite_db);
     SQL->create_reads_table(originalCompsQuery->partitioning_mode);
 
     // Instantiate kmerDecoder with hashing mode 3
@@ -116,7 +110,7 @@ int main(int argc, char **argv) {
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq1_end = READ_1_KMERS->getKmers()->end();
         flat_hash_map<std::string, std::vector<kmer_row>>::iterator seq2_end = READ_2_KMERS->getKmers()->end();
 
-        vector <tuple<string, string, uint32_t, uint32_t>> sqlite_chunk; // Buffer for holding Sqlite rows
+        vector<tuple<string, string, uint32_t, uint32_t>> sqlite_chunk; // Buffer for holding Sqlite rows
 
         while (seq1 != seq1_end && seq2 != seq2_end) {
             tuple<string, bool, int, uint64_t> read_1_result = originalCompsQuery->classifyRead(kf, seq1->second, 1);
@@ -131,7 +125,7 @@ int main(int argc, char **argv) {
             uint32_t R2_connectedComponent = get<3>(read_2_result);
 
             // Pairs counter
-            if ((get<1>(read_1_result) && get<1>(read_2_result)) && (get<1>(read_1_result) != get<1>(read_2_result))) {
+            if ((get<1>(read_1_result) && get<1>(read_2_result)) && (R1_connectedComponent != R2_connectedComponent)) {
                 pairsCounter->insert_pair(R1_connectedComponent, R2_connectedComponent);
             }
 
@@ -236,8 +230,6 @@ int main(int argc, char **argv) {
 
     cerr << "Dumping pairCounter ..." << endl;
     pairsCounter->tsv_export();
-//    pairsCounter->binaryDump();
-
 
     // --------------------------------------------------------------------------------
     //                              Dumping pairCounts TSV Done                       |
