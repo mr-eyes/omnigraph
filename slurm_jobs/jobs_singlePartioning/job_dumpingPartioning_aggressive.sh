@@ -2,8 +2,8 @@
 #! /bin/bash -login
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
-#SBATCH -p bmh
-#SBATCH -J singlePartioning_aggressive
+#SBATCH -p bmm
+#SBATCH -J dumpingPartions_aggressive
 #SBATCH --time=5:00:00
 #SBATCH -N 1
 #SBATCH -n 1
