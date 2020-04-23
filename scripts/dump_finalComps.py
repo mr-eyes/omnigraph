@@ -149,6 +149,7 @@ def perform_writing(params):
         for row in read_2_curs:
             fastaWriter.write(f">{row[0]}.2\t{_finalCompID}\n{row[2]}\n")
 
+    conn.close()
 
 output_dir = os.path.basename(sqlite_db_path).replace(".db", '')
 os.makedirs(output_dir)
