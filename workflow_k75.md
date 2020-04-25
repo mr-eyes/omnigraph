@@ -17,8 +17,10 @@ Key points:
         - 2.2.1 Mild dislinkage clustering
         - 2.2.2 Aggressive dislinkage clustering
 
-3. cDBG Indexing
-    - To be continued.
+3. Partitioning
+    - Indexing
+    - Raw reads matching
+    - Dumping
 
 ---
 
@@ -31,7 +33,7 @@ fastq-dump --fasta 0 --split-files SRR11015356.sra
 ```
 
 ### 1.2 Creating compact De Bruijn graph for the reads.
-```bash
+```shell script
 
 # Creating a file with reads paths
 ls -1 *fasta > list_reads
@@ -78,7 +80,7 @@ python ${SCRIPTS}/unitigs_edges_histogram.py ${OUTPUT_PREFIX}.unitigs.fa ${OUTPU
 
 #### 2.1.1 Mild dislinkage
 
-```bash
+```shell script
 
 KMER_SIZE=75
 FILTER_MODE=mild # << Discriminator variable
@@ -115,7 +117,7 @@ python ${SCRIPTS}/unitigs_edges_histogram.py ${OUTPUT_PREFIX}.unitigs.fa ${OUTPU
 
 #### 2.1.2 Aggressive dislinkage
 
-```bash
+```shell script
 
 KMER_SIZE=75
 FILTER_MODE=aggressive # << Discriminator variable
@@ -153,7 +155,7 @@ python ${SCRIPTS}/unitigs_edges_histogram.py ${OUTPUT_PREFIX}.unitigs.fa ${OUTPU
 
 #### 2.2.1 Mild dislinkage clustering
 
-```bash
+```shell script
 
 KMER_SIZE=75
 FILTER_MODE=mild # << Discriminator variable
@@ -220,7 +222,7 @@ done
 
 #### 2.2.2 Aggressive dislinkage clustering
 
-```bash
+```shell script
 
 KMER_SIZE=75
 FILTER_MODE=aggressive # << Discriminator variable
@@ -282,5 +284,50 @@ do
     largest_component=$(cat ${STD_OUT}| grep -w "largest_comp_bp" | cut -f2)
     python ${SCRIPTS}/unitigs_to_viz_kmersHistograms.py cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa cDBG2_${SIM}_${OUT_PREFIX}.unitigs.fa.components.csv ${largest_component} >>  "${SIM}_${STD_OUT}"    
 done
+
+```
+
+## 3. Kmers labeling
+
+
+```shell script
+
+# Setting the reference cDBG unitigs fasta file
+unitigs_fasta=aggressive_dislinked_cDBG_SRR11015356_k75
+
+# Generating connected components CSV
+python ${SCRIPTS}/unitigs_to_connected_components.py ${unitigs_fasta}.unitigs.fa
+
+# Generating names file for the labeling process
+python ${SCRIPTS}/unitigs_to_names_tsv.py ${unitigs_fasta}.unitigs.fa ${unitigs_fasta}.unitigs.fa.components.csv
+
+# Start the kmers labeling
+./cDBG_labeling ${unitigs_fasta}.unitigs.fa ${unitigs_fasta}.unitigs.fa.names.tsv ${unitigs_fasta}
+```
+
+## 4. Final components construction
+
+### 4.1 Partitioning
+
+```shell script
+OUT_PREFIX=singlePartioning_aggressive_cDBG75
+INDEX_PREFIX=aggressive_dislinked_cDBG_SRR11015356_k75
+R1=SRR11015356_1.fasta
+R2=SRR11015356_2.fasta
+
+./single_primaryPartitioning ${INDEX_PREFIX} ${R1} ${R2} ${OUT_PREFIX}
+
+```
+
+### 4.1 Dumping
+
+```shell script
+SCRIPTS=omnigraph/scripts
+THREADS=32
+
+DB=singlePartioning_aggressive_cDBG75_omni.db
+PAIRS_COUNT=singlePartioning_aggressive_cDBG75_pairsCount.tsv
+
+python ${SCRIPTS}/dump_finalComps.py ${DB} ${PAIRS_COUNT} ${THREADS}
 
 ```
