@@ -13,7 +13,7 @@ Output:
 
 
 Run:
-python dump_finalComps.py <db_file> <pairsCountFile> <original_connected_comps.TSV> <no_cores> <opt: cutoff (default:1)>
+python dump_finalComps.py --help
 """
 
 import sqlite3
@@ -158,16 +158,11 @@ def get_nodes_sizes(components_file_path):
 
 @click.command()
 @click.option('-d', '--db', "sqlite_db_path", required=True, type=click.Path(exists=True), help="sqlite database file")
-@click.option('-u', '--unitigs', "unitigs_path", required=True, type=click.Path(exists=True),
-              help="cDBG unititgs fasta file")
-@click.option('-p', '--pairs-count', "pairsCountFile", required=True, type=click.Path(exists=True),
-              help="Pairs count TSV")
-@click.option('-u', '--orig-comps', "originalConnectedComps_path", required=True, type=click.Path(exists=True),
-              help="cDBG unititgs fasta file")
-@click.option('-t', '--no-cores', 'no_cores', required=False, type=click.INT, default=1, show_default=True,
-              help="number of cores")
-@click.option('-c', '--cutoff', 'cutoff_threshold', required=False, type=click.INT, default=1, show_default=True,
-              help="cutoff threshold")
+@click.option('-u', '--unitigs', "unitigs_path", required=True, type=click.Path(exists=True),help="cDBG unititgs fasta file")
+@click.option('-p', '--pairs-count', "pairsCountFile", required=True, type=click.Path(exists=True),help="Pairs count TSV")
+@click.option('-u', '--orig-comps', "originalConnectedComps_path", required=True, type=click.Path(exists=True),help="cDBG unititgs fasta file")
+@click.option('-t', '--no-cores', 'no_cores', required=False, type=click.INT, default=1, show_default=True,help="number of cores")
+@click.option('-c', '--cutoff', 'cutoff_threshold', required=False, type=click.INT, default=1, show_default=True,help="cutoff threshold")
 def main(no_cores, cutoff_threshold, sqlite_db_path, unitigs_path, pairsCountFile, originalConnectedComps_path):
     """
     Dump the final components from the sqlite DB to fasta files
@@ -266,8 +261,6 @@ def main(no_cores, cutoff_threshold, sqlite_db_path, unitigs_path, pairsCountFil
     print(f"number of all components: {components.number_of_all_components}")
     print("---" * 10)
 
-    print(originalComp_total_sizesbp)
-
     output_dir = os.path.basename(sqlite_db_path).replace(".db", '') + f"_cutoff({cutoff_threshold})"
     os.makedirs(output_dir)
 
@@ -289,7 +282,14 @@ def main(no_cores, cutoff_threshold, sqlite_db_path, unitigs_path, pairsCountFil
     data.append(go.Bar(name="countHisto", x=list(map(str, histogram.keys())), y=list(histogram.values())))
     fig = go.Figure(data)
     fig.update_layout(barmode='group', yaxis_type="log", xaxis=dict(tickmode='linear'))
-    plot(fig, filename=f"histogram_{output_dir}.html", auto_open=False)
+    plot(fig, filename=f"reads_len_histogram_{output_dir}.html", auto_open=False)
+
+    histogram = dict(Counter(originalComp_total_sizesbp))
+    data = list()
+    data.append(go.Bar(name="countHisto", x=list(map(str, histogram.keys())), y=list(histogram.values())))
+    fig = go.Figure(data)
+    fig.update_layout(barmode='group', yaxis_type="log", xaxis=dict(tickmode='linear'))
+    plot(fig, filename=f"comp_len_histogram_{output_dir}.html", auto_open=False)
 
 
 if __name__ == '__main__':
