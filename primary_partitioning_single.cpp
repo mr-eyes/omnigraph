@@ -127,11 +127,14 @@ int main(int argc, char **argv) {
             // Pairs counter
             if ((get<1>(read_1_result) && get<1>(read_2_result)) && (R1_connectedComponent != R2_connectedComponent)) {
                 pairsCounter->insert_pair(R1_connectedComponent, R2_connectedComponent);
+
+                // uncomment if you want to insert everything
+                sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R2_constructedRead, R1_connectedComponent,
+                                                     R2_connectedComponent));
             }
 
-
-            sqlite_chunk.emplace_back(
-                    make_tuple(R1_constructedRead, R2_constructedRead, R1_connectedComponent, R2_connectedComponent));
+            // uncomment if you want to insert everthing
+//            sqlite_chunk.emplace_back(make_tuple(R1_constructedRead, R2_constructedRead, R1_connectedComponent, R2_connectedComponent));
 
             seq1++;
             seq2++;
