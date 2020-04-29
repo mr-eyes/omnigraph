@@ -44,6 +44,8 @@ cd "$MYTMP"
 ## Copy paritions db
 cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20550930/singlePartioning_aggressive_cDBG75_omni.db ./
 cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20550930/singlePartioning_aggressive_cDBG75_pairsCount.tsv ./
+cp /home/mhussien/omnigraph/data/cDBG75/aggressive_dislinked_cDBG_SRR11015356_k75.unitigs.fa ./
+cp /home/mhussien/omnigraph/data/cDBG75/cDBG_SRR11015356_k75.unitigs.fa.components.csv ./
 
 # Set Global Variables
 SCRIPTS=/home/mhussien/omnigraph/scripts
@@ -53,12 +55,19 @@ THREADS=32
 
 DB=singlePartioning_aggressive_cDBG75_omni.db
 PAIRS_COUNT=singlePartioning_aggressive_cDBG75_pairsCount.tsv
+UNITIGS_FASTA=aggressive_dislinked_cDBG_SRR11015356_k75.unitigs.fa
+ORIGINAL_COMPS=cDBG_SRR11015356_k75.unitigs.fa.components.csv
 
-/usr/bin/time -v python ${SCRIPTS}/dump_finalComps.py ${DB} ${PAIRS_COUNT} ${THREADS}
+/usr/bin/time -v python ${SCRIPTS}/dump_finalComps.py --db ${DB} --pairs-count ${PAIRS_COUNT} --no-cores ${THREADS} --cutoff 1 --orig-comps $ORIGINAL_COMPS --unitigs $UNITIGS_FASTA
+/usr/bin/time -v python ${SCRIPTS}/dump_finalComps.py --db ${DB} --pairs-count ${PAIRS_COUNT} --no-cores ${THREADS} --cutoff 2 --orig-comps $ORIGINAL_COMPS --unitigs $UNITIGS_FASTA
+/usr/bin/time -v python ${SCRIPTS}/dump_finalComps.py --db ${DB} --pairs-count ${PAIRS_COUNT} --no-cores ${THREADS} --cutoff 3 --orig-comps $ORIGINAL_COMPS --unitigs $UNITIGS_FASTA
+/usr/bin/time -v python ${SCRIPTS}/dump_finalComps.py --db ${DB} --pairs-count ${PAIRS_COUNT} --no-cores ${THREADS} --cutoff 4 --orig-comps $ORIGINAL_COMPS --unitigs $UNITIGS_FASTA
 
 # Remove reads
 rm -rf ${DB}
 rm -rf ${PAIRS_COUNT}
+rm -rf ${UNITIGS_FASTA}
+rm -rf ${ORIGINAL_COMPS}
 
 ############################## DONE Partitioning #######################################
 
