@@ -42,8 +42,8 @@ trap cleanup EXIT
 cd "$MYTMP"
 
 ## Copy paritions db
-cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20550930/singlePartioning_aggressive_cDBG75_omni.db ./
-cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20550930/singlePartioning_aggressive_cDBG75_pairsCount.tsv ./
+cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20720280/singlePartioning_aggressive_cDBG75_omni.db ./
+cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggressive/slurm_singlePartioning_aggressive_20720280/singlePartioning_aggressive_cDBG75_pairsCount.tsv ./
 cp /home/mhussien/omnigraph/data/cDBG75/aggressive_dislinked_cDBG_SRR11015356_k75.unitigs.fa ./
 cp /home/mhussien/omnigraph/data/cDBG75/cDBG_SRR11015356_k75.unitigs.fa.components.csv ./
 
