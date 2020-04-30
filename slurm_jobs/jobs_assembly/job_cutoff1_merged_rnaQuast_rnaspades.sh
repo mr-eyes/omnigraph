@@ -52,7 +52,7 @@ TRANSCRIPTS=transcripts.fasta
 
 ############################## (1) START Dumping ####################################
 
-/usr/bin/time -v rnaQUAST.py --transcripts ${TRANSCRIPTS} --reference ${REF_GENOME} --gtf ${GTF} -t ${THREADS} --disable_infer_transcripts=True
+/usr/bin/time -v rnaQUAST.py --transcripts ${TRANSCRIPTS} --reference ${REF_GENOME} --gtf ${GTF} -t ${THREADS} --disable_infer_transcripts
 
 ############################## DONE Partitioning #######################################
 
