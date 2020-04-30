@@ -12,11 +12,9 @@
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
 
-
 # activate conda in general (MUST BE PLACE BEFORE ANYTHING)
 . /home/mhussien/miniconda3/etc/profile.d/conda.sh
 conda activate omnigraph
-
 
 # exit when any command fails
 set -e
@@ -25,14 +23,13 @@ set -o errexit
 set -x
 set -euox pipefail
 
-
 # make a directory specific to user and job
 export MYTMP=/scratch/${USER}/slurm_${SLURM_JOB_NAME}_${SLURM_JOBID}
 mkdir -p "$MYTMP"
 
 # force clean it up
 function cleanup() {
-    rm -rf "$MYTMP";
+  rm -rf "$MYTMP"
 }
 
 trap cleanup EXIT
@@ -55,22 +52,18 @@ TRANSCRIPTS=transcripts.fasta
 
 ############################## (1) START Dumping ####################################
 
-
-/usr/bin/time -v rnaQUAST.py --transcripts ${TRANSCRIPTS} --reference ${REF_GENOME} --gtf ${GTF} -t ${THREADS}
-
+/usr/bin/time -v rnaQUAST.py --transcripts ${TRANSCRIPTS} --reference ${REF_GENOME} --gtf ${GTF} -t ${THREADS} disable_infer_transcripts=True
 
 ############################## DONE Partitioning #######################################
 
-
 ########################### Move scratch to home dir ###################
 
-
 cp -r $MYTMP "$SLURM_SUBMIT_DIR"
-scontrol show job $SLURM_JOB_ID     # Print out final statistics about resource uses before job exits
+scontrol show job $SLURM_JOB_ID # Print out final statistics about resource uses before job exits
 
 # Print out values of the current jobs SLURM environment variables
 env | grep SLURM
 
-scontrol show job ${SLURM_JOB_ID}     # Print out final statistics about resource uses before job exits
+scontrol show job ${SLURM_JOB_ID} # Print out final statistics about resource uses before job exits
 
 sstat --format 'JobID,MaxRSS,AveCPU' -P ${SLURM_JOB_ID}.batch
