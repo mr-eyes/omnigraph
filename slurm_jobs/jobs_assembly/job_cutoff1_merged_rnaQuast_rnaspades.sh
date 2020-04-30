@@ -42,10 +42,10 @@ trap cleanup EXIT
 cd "$MYTMP"
 
 ## Copy reference genome db
-cp "/home/mhussien/omnigraph/data/reference_genome/*" ./
+cp /home/mhussien/omnigraph/data/reference_genome/* ./
 
 ## Copy rnaspades assembled transcripts
-cp "/home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/assembly/merged_cutoff1_rnaspades/slurm_merged_cutoff1_rnaspades_20737449/_rnaspades_cutoff_1_/transcripts.fasta" ./
+cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/assembly/merged_cutoff1_rnaspades/slurm_merged_cutoff1_rnaspades_20737449/_rnaspades_cutoff_1_/transcripts.fasta ./
 
 # Set Global Variables
 THREADS=32
