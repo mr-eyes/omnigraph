@@ -217,14 +217,18 @@ def main(no_cores, cutoff_threshold, sqlite_db_path, unitigs_path, pairsCountFil
     3. Multithreaded dumping the partitions to fasta files
     """
 
-    all_lengths = multiprocessing.Manager().list()
-    originalComp_total_sizesbp = multiprocessing.Manager().list()
-    shared_origComp_to_sizebp = multiprocessing.Manager().dict(origComp_to_sizebp)
+    # all_lengths = multiprocessing.Manager().list()
+    # originalComp_total_sizesbp = multiprocessing.Manager().list()
+    # shared_origComp_to_sizebp = multiprocessing.Manager().dict()
+
+    all_lengths = list() # multiprocessing.Manager().list()
+    originalComp_total_sizesbp = list() # multiprocessing.Manager().list()
+    shared_origComp_to_sizebp = dict() # multiprocessing.Manager().dict()
+
+    for k, v in origComp_to_sizebp.items():
+        shared_origComp_to_sizebp[k] = v
 
     def perform_writing(params):
-        global all_lengths
-        global originalComp_total_sizesbp
-        global shared_origComp_to_sizebp
 
         file_path, _finalCompID, _originalComps = params
         conn = sqlite3.connect(sqlite_db_path)
@@ -269,9 +273,14 @@ def main(no_cores, cutoff_threshold, sqlite_db_path, unitigs_path, pairsCountFil
         file_name = os.path.join(output_dir, f"{finalComp}.fa")
         all_params.append((file_name, finalComp, originalComps))
 
-    with multiprocessing.Pool(no_cores) as pool:
-        for _ in tqdm(pool.imap_unordered(perform_writing, all_params), total=len(all_params)):
-            pass
+    map(perform_writing, all_params)
+
+    for param in tqdm(all_params):
+        perform_writing(param)
+
+    # with multiprocessing.Pool(no_cores) as pool:
+    #     for _ in tqdm(pool.imap_unordered(perform_writing, all_params), total=len(all_params)):
+    #         pass
 
     """
     Histogram of lengths BP
