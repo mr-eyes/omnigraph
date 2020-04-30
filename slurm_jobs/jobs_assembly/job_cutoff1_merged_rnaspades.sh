@@ -32,6 +32,7 @@ mkdir -p "$MYTMP"
 
 # force clean it up
 function cleanup() {
+    cp -r $MYTMP "$SLURM_SUBMIT_DIR"
     rm -rf "$MYTMP";
 }
 
@@ -56,8 +57,7 @@ OUTPUT_DIR=_rnaspades_cutoff_1_
 ############################## (1) START Dumping ####################################
 
 
-/usr/bin/time -v rnaspades.py --s unassembled_cutoff_1_.fa -o ${OUTPUT_DIR} -m 250 -t ${THREADS}
-
+/usr/bin/time -v rnaspades.py -s unassembled_cutoff_1_.fa -o ${OUTPUT_DIR} -m 250 -t ${THREADS}
 
 ############################## DONE Partitioning #######################################
 
