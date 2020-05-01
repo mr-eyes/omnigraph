@@ -331,3 +331,22 @@ PAIRS_COUNT=singlePartioning_aggressive_cDBG75_pairsCount.tsv
 python ${SCRIPTS}/dump_finalComps.py ${DB} ${PAIRS_COUNT} ${THREADS}
 
 ```
+
+## 5. Assembly (Draft)
+
+OUTPUT_DIR=
+THREADS=
+MAX_RAM=
+READS=
+
+/usr/bin/time -v rnaspades.py -s ${READS} -o ${OUTPUT_DIR} -m ${MAX_RAM} -t ${THREADS}
+
+
+### 5.1 Assembly assessment (Draft)
+
+THREADS=32
+GTF=gencode.v34.chr_patch_hapl_scaff.annotation.gtf
+REF_GENOME=GRCh38.p13.genome.fa
+TRANSCRIPTS=transcripts.fasta
+
+/usr/bin/time -v rnaQUAST.py --disable_infer_transcripts --disable_infer_genes --transcripts ${TRANSCRIPTS} --reference ${REF_GENOME} --gtf ${GTF} -t ${THREADS}
