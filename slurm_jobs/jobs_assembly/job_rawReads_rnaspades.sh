@@ -2,7 +2,7 @@
 #! /bin/bash -login
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=mabuelanin@gmail.com
-#SBATCH -p bmm
+#SBATCH -p bmh
 #SBATCH -J assembly_rawReads_rnaSpades
 #SBATCH --time=10:00:00
 #SBATCH -N 1
