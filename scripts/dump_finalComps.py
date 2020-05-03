@@ -136,20 +136,52 @@ print(f"Number of connected comps: {number_of_final_components}")
 def perform_writing(params):
     file_path, _finalCompID, _originalComps = params
     conn = sqlite3.connect(sqlite_db_path)
-    _originalComps = tuple(_originalComps)
-    read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
-    read_1_curs = conn.execute(read_1_sql, _originalComps)
+    _originalComps = list(_originalComps)
 
-    read_2_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
-    read_2_curs = conn.execute(read_2_sql, _originalComps)
+    # Split into chunks of 100 originalComponent
+    chunk_size = 100
+    originalCompsChunks = [_originalComps[i * chunk_size:(i + 1) * chunk_size] for i in range((len(_originalComps) + chunk_size - 1) // chunk_size)]
 
     with open(file_path, 'w') as fastaWriter:
-        for row in read_1_curs:
-            fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
-        for row in read_2_curs:
-            fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
+
+        # Do it in chunks
+
+        for chunk_originalComp in originalCompsChunks:
+            chunk_originalComp = tuple(chunk_originalComp)
+
+            read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
+            read_1_curs = conn.execute(read_1_sql, chunk_originalComp)
+
+            read_2_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
+            read_2_curs = conn.execute(read_2_sql, chunk_originalComp)
+
+            for row in read_1_curs:
+                fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
+
+            for row in read_2_curs:
+                fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
 
     conn.close()
+
+
+# Old version, related to issue #4
+# def perform_writing(params):
+#     file_path, _finalCompID, _originalComps = params
+#     conn = sqlite3.connect(sqlite_db_path)
+#     _originalComps = tuple(_originalComps)
+#     read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
+#     read_1_curs = conn.execute(read_1_sql, _originalComps)
+#
+#     read_2_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
+#     read_2_curs = conn.execute(read_2_sql, _originalComps)
+#
+#     with open(file_path, 'w') as fastaWriter:
+#         for row in read_1_curs:
+#             fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
+#         for row in read_2_curs:
+#             fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
+#
+#     conn.close()
 
 
 output_dir = f"dumped_partitions_cutoff{cutoff_threshold}_" + os.path.basename(sqlite_db_path).replace(".db", '')
