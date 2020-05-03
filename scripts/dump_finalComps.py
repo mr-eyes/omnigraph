@@ -152,7 +152,7 @@ def perform_writing(params):
             read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
             read_1_curs = conn.execute(read_1_sql, chunk_originalComp)
 
-            read_2_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
+            read_2_sql = "select * from reads where seq2_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
             read_2_curs = conn.execute(read_2_sql, chunk_originalComp)
 
             for row in read_1_curs:
