@@ -151,7 +151,8 @@ def perform_writing(params):
 
     conn.close()
 
-output_dir = os.path.basename(sqlite_db_path).replace(".db", '')
+
+output_dir = f"dumped_partitions_cutoff{cutoff_threshold}_" + os.path.basename(sqlite_db_path).replace(".db", '')
 os.makedirs(output_dir)
 
 all_params = list()
