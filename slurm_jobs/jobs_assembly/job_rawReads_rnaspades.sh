@@ -7,8 +7,8 @@
 #SBATCH --time=10:00:00
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 32
-#SBATCH --mem=250gb
+#SBATCH -c 20
+#SBATCH --mem=150gb
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
 
@@ -47,13 +47,13 @@ cp /home/mhussien/omnigraph/data/SRR11015356_1.fasta ./
 cp /home/mhussien/omnigraph/data/SRR11015356_2.fasta ./
 
 # Set Global Variables
-THREADS=32
+THREADS=20
 OUTPUT_DIR=_rnaspades_rawReads_
 
 
 ############################## (1) START Dumping ####################################
 
-/usr/bin/time -v rnaspades.py -1 SRR11015356_1.fasta -2 SRR11015356_2.fasta -o ${OUTPUT_DIR} -m 250 -t ${THREADS}
+/usr/bin/time -v rnaspades.py -1 SRR11015356_1.fasta -2 SRR11015356_2.fasta -o ${OUTPUT_DIR} -m 150 -t ${THREADS}
 
 ############################## DONE Partitioning #######################################
 
