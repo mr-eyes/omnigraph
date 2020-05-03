@@ -145,9 +145,9 @@ def perform_writing(params):
 
     with open(file_path, 'w') as fastaWriter:
         for row in read_1_curs:
-            fastaWriter.write(f">{row[0]}.1\t{_finalCompID}\n{row[1]}\n")
+            fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
         for row in read_2_curs:
-            fastaWriter.write(f">{row[0]}.2\t{_finalCompID}\n{row[2]}\n")
+            fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
 
     conn.close()
 
