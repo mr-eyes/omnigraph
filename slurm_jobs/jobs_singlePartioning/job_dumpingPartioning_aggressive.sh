@@ -7,7 +7,7 @@
 #SBATCH --time=4:00:00
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 4
+#SBATCH -c 32
 #SBATCH --mem=60gb
 #SBATCH --output=slurm_%x.%j.out
 #SBATCH --error=slurm_%x.%j.err
@@ -47,7 +47,7 @@ cp /home/mhussien/omnigraph/data/cDBG75/singlePartitions/slurm/singlePart_aggres
 
 # Set Global Variables
 SCRIPTS=/home/mhussien/omnigraph/scripts
-THREADS=4
+THREADS=32
 
 ############################## (1) START Dumping ####################################
 
