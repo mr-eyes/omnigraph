@@ -24,7 +24,7 @@ void SQLiteManager::create_reads_table(int partitioning_mode) {
         fprintf(stderr, "Creating `reads` table...\n");
 
         const char *_sqlite_create_table;
-        char *_sqlite_create_index;
+        string _sqlite_create_index;
 
         // By Default partitioning_mode = 1
 
@@ -37,7 +37,7 @@ void SQLiteManager::create_reads_table(int partitioning_mode) {
                                "`seq2_original_component`	INTEGER"
                                ");";
 
-        _sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_original_component);";
+        _sqlite_create_index = "CREATE INDEX components_index ON reads (seq1_original_component, seq2_original_component);";
 
         if (partitioning_mode == 2) {
             _sqlite_create_table = "CREATE TABLE IF NOT EXISTS `reads` ("
@@ -62,7 +62,7 @@ void SQLiteManager::create_reads_table(int partitioning_mode) {
             fprintf(stderr, "Table created successfully\n");
         }
 
-        this->rc = sqlite3_exec(this->db.db_, _sqlite_create_index, this->callback, 0, &this->zErrMsg);
+        this->rc = sqlite3_exec(this->db.db_, _sqlite_create_index.c_str(), this->callback, 0, &this->zErrMsg);
 
         if (this->rc != SQLITE_OK) {
             fprintf(stderr, "SQL error: %s\n", this->zErrMsg);
