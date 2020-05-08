@@ -12,7 +12,7 @@ Output:
 
 
 Run:
-python dump_finalComps.py <db_file> <pairsCountFile> <no_cores> <optional: cutoff (default: 1)>
+python dump_finalComps.py <db_file> <pairsCountFile> <originalComponentsCSV> <no_cores> <optional: cutoff (default: 1)>
 """
 
 import sqlite3
@@ -25,6 +25,9 @@ import multiprocessing
 
 class ConnectedComponents:
 
+    isolated_source = list()
+    isolated_target = list()
+
     def __init__(self, min_count=1):
         self.__source = list()
         self.__target = list()
@@ -36,6 +39,9 @@ class ConnectedComponents:
         if pair_count >= self.THRESHOLD:
             self.__source.append(source_node)
             self.__target.append(target_node)
+        else:
+            self.isolated_source.append(source_node)
+            self.isolated_target.append(target_node)
 
     def construct(self):
         __leaders = defaultdict(lambda: None)
@@ -60,8 +66,17 @@ class ConnectedComponents:
         for x in __leaders:
             __groups[__find(x)].add(x)
 
-        for component_id, (k, v) in enumerate(__groups.items(), start=1):
-            self.final_components[component_id] = v
+        _last_key = 0
+        for component_id, (_k, _v) in enumerate(__groups.items(), start=1):
+            self.final_components[component_id] = _v
+            _last_key = component_id
+
+        # Disabled until further invesigation
+        # Adding isolated components
+        # for i in range(len(self.isolated_source)):
+        #     _last_key += 1
+        #     self.final_components[_last_key] = [self.isolated_source[i],self.isolated_target[i]]
+
 
         self.number_of_components = len(self.final_components)
 
@@ -95,15 +110,16 @@ def get_nodes_sizes(components_file_path):
 
 
 if len(sys.argv) < 4:
-    raise ValueError("run: python dump_finalComps.py dump_finalComps.py <db_file> <pairsCountFile> <no_cores> <cutoff>")
+    raise ValueError("run: python dump_finalComps.py <db_file> <pairsCountFile> <originalCompsCSV> <no_cores> <cutoff>")
 
 cutoff_threshold = 1
 sqlite_db_path = sys.argv[1]
 pairsCountFile = sys.argv[2]
-no_cores = int(sys.argv[3])
+originalComponentsCSV = sys.argv[3]
+no_cores = int(sys.argv[4])
 
-if len(sys.argv) == 5:
-    cutoff_threshold = int(sys.argv[4])
+if len(sys.argv) == 6:
+    cutoff_threshold = int(sys.argv[5])
 
 """
 1. Parse the pairsCount to edges
@@ -128,95 +144,80 @@ number_of_final_components = components.number_of_components
 
 print(f"Number of connected comps: {number_of_final_components}")
 
+
+""" 2.1 Adding Isolated Components """
+
+
+numberOfOriginalComponents = 0
+with open(originalComponentsCSV) as origCompReader:
+    for line in origCompReader:
+        numberOfOriginalComponents += 1
+
+final_components = components.get_components_dict()
+gathered_originalComponents = set()
+for k, v in final_components.items():
+    for origComp in v:
+        gathered_originalComponents.add(origComp)
+
+isoloatedComponents_set = set(range(1, numberOfOriginalComponents+1)) - gathered_originalComponents
+
+# Adding the isolated components to the final components
+last_key = max(final_components.keys()) + 1
+for i, isolatedComp in enumerate(isoloatedComponents_set, start=last_key):
+    final_components[i] = [isolatedComp]
+
+
+
 """
 3. Multithreaded dumping the partitions to fasta files
 """
 
+"""
+
+1. One of them is 0
+2. Two queries:
+    - Query1: search by R1 matching to any original component in the final component or unmatched (0) where R2 matching any original component in the same final component
+    - Query2: R1 matched to any original component in the final component and R2 is 0
+
+"""
+
 
 def perform_writing(params):
+    def finalComp_to_pairs(original_comps):
+        for _comp1 in original_comps:
+            for _comp2 in original_comps:
+                yield _comp1, _comp2
+        for _comp2 in original_comps:
+            yield 0, _comp2
+        for _comp1 in original_comps:
+            yield _comp1, 0
+
     file_path, _finalCompID, _originalComps = params
     conn = sqlite3.connect(sqlite_db_path)
     _originalComps = list(_originalComps)
 
-    # Split into chunks of 100 originalComponent
-    chunk_size = 100
-    originalCompsChunks = [_originalComps[i * chunk_size:(i + 1) * chunk_size] for i in range((len(_originalComps) + chunk_size - 1) // chunk_size)]
-
     with open(file_path, 'w') as fastaWriter:
-
-        # Do it in chunks
-        for chunk_originalComp in originalCompsChunks:
-            for i in range(len(chunk_originalComp)):
-                for j in range(len(chunk_originalComp)):
-                    read_sql = f"select * from reads where seq1_original_component = {chunk_originalComp[i]} AND seq1_original_component = {chunk_originalComp[j]}"
-                    read_curs = conn.execute(read_sql)
-                    for row in read_curs:
-                        fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
-                        fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
+        for orig_comp1, orig_comp2 in finalComp_to_pairs(_originalComps):
+            read_sql = f"select * from reads where seq1_original_component = {orig_comp1} AND seq2_original_component = {orig_comp2}"
+            read_curs = conn.execute(read_sql)
+            rows = read_curs.fetchall()
+            for row in rows:
+                fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
+                fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
 
     conn.close()
-
-
-# version 2
-
-# def perform_writing(params):
-#     file_path, _finalCompID, _originalComps = params
-#     conn = sqlite3.connect(sqlite_db_path)
-#     _originalComps = list(_originalComps)
-#
-#     # Split into chunks of 100 originalComponent
-#     chunk_size = 100
-#     originalCompsChunks = [_originalComps[i * chunk_size:(i + 1) * chunk_size] for i in range((len(_originalComps) + chunk_size - 1) // chunk_size)]
-#
-#     with open(file_path, 'w') as fastaWriter:
-#
-#         # Do it in chunks
-#
-#         for chunk_originalComp in originalCompsChunks:
-#             chunk_originalComp = tuple(chunk_originalComp)
-#
-#             read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
-#             read_1_curs = conn.execute(read_1_sql, chunk_originalComp)
-#
-#             read_2_sql = "select * from reads where seq2_original_component in ({seq})".format(seq=','.join(['?'] * len(chunk_originalComp)))
-#             read_2_curs = conn.execute(read_2_sql, chunk_originalComp)
-#
-#             for row in read_1_curs:
-#                 fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
-#
-#             for row in read_2_curs:
-#                 fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
-#
-#     conn.close()
-
-
-# Old version, related to issue #4
-# def perform_writing(params):
-#     file_path, _finalCompID, _originalComps = params
-#     conn = sqlite3.connect(sqlite_db_path)
-#     _originalComps = tuple(_originalComps)
-#     read_1_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
-#     read_1_curs = conn.execute(read_1_sql, _originalComps)
-#
-#     read_2_sql = "select * from reads where seq1_original_component in ({seq})".format(seq=','.join(['?'] * len(_originalComps)))
-#     read_2_curs = conn.execute(read_2_sql, _originalComps)
-#
-#     with open(file_path, 'w') as fastaWriter:
-#         for row in read_1_curs:
-#             fastaWriter.write(f">{row[0]}.1\t{row[3]}\n{row[1]}\n")
-#         for row in read_2_curs:
-#             fastaWriter.write(f">{row[0]}.2\t{row[4]}\n{row[2]}\n")
-#
-#     conn.close()
 
 
 output_dir = f"dumped_partitions_cutoff{cutoff_threshold}_" + os.path.basename(sqlite_db_path).replace(".db", '')
 os.makedirs(output_dir)
 
 all_params = list()
+# Debugging activated
 for finalComp, originalComps in components.get_components_dict().items():
     file_name = os.path.join(output_dir, f"{finalComp}.fa")
-    all_params.append((file_name, finalComp, originalComps))
+    # Debugging
+    if finalComp == 1:
+        all_params.append((file_name, finalComp, originalComps))
 
 with multiprocessing.Pool(no_cores) as pool:
     for _ in tqdm(pool.imap_unordered(perform_writing, all_params), total=len(all_params)):
